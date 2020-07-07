@@ -76,7 +76,7 @@ html,input,select,button {
 body {
 	/* Center body in page */
 	margin: 0 auto;
-	max-width: 750px;
+	max-width: 900px;
 	padding: 2rem;
 	border-radius: 6px;
 	overflow-x: hidden;
@@ -86,7 +86,7 @@ body {
 
 	/* Main body text */
 	color: var(--nc-tx-2);
-	font-size: 1.03rem;
+	font-size: 0.9rem;
 	line-height: 1.5;
 }
 
@@ -362,14 +362,14 @@ legend {
 table {
 	/* border-collapse sets the table's elements to share borders, rather than floating as separate "boxes". */
 	border-collapse: collapse;
-	width: 100%
+	width: 100%;
 }
 
 td,
 th {
 	border: 1px solid var(--nc-bg-3);
 	text-align: left;
-	padding: .5rem;
+	padding: .3rem;
 }
 
 th {
