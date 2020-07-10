@@ -8,9 +8,8 @@ function requestData(data) {
         if (this.readyState == 4 && this.status == 200) {
             switch(data) {
                 case("events"):
-                    loadEventTable(this); //
+                    loadEventTable(this);
                     break;
-
                 case("categories"):
                     loadCategoryTable(this);
                     break;
@@ -21,6 +20,17 @@ function requestData(data) {
     xhttp.send();
 }
 
+function deleteData(data, id) {
+    switch(data) {
+        case("event"):
+            document.getElementById("testbutton").innerHTML += "Button Delete wurde gedrückt! <br>";
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("DELETE", "http://dhbw.radicalsimplicity.com/calendar/test/events/"+id, true);
+            xhttp.send();
+            break;
+    }
+}
+
 function loadEventTable(json) {
     var parsed_events = JSON.parse(json.responseText);
     var events;
@@ -29,7 +39,7 @@ function loadEventTable(json) {
     var page;
     var image;
 
-    console.log(parsed_events)
+    console.log(parsed_events);
 
     for (i in parsed_events) {
         date = parsed_events[i].start.split("T", 1);
@@ -45,7 +55,7 @@ function loadEventTable(json) {
         if(parsed_events[i].imageurl == null) {
             img = "No Image";
         } else {
-            img = "<img src=\"" + parsed_events[i].imageurl + "\">";
+            img = "<img src=\"" + parsed_events[i].imageurl + "\" width=\"50\"\>";
         }
 
         events = events + "<tr><td>" +
@@ -56,7 +66,7 @@ function loadEventTable(json) {
             date+"<br>"+time + "</td><td>" +
             "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td>" +
             img + "</td><td>" +
-            "<button onclick=\"editEvent("+parsed_events[i].id+")\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent()\">Delete</button>" + "</td></tr>";
+            "<button onclick=\"editEvent("+parsed_events[i].id+")\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\">Delete</button>" + "</td></tr>";
     }
     document.getElementById("event_table").innerHTML = addTableHeader() + events;
 }
@@ -71,17 +81,20 @@ function editEvent(i) {
     console.log(i);
 }
 
-function deleteEvent() {
-    document.getElementById("testbutton").innerHTML += "Button Delete wurde gedrückt! <br>";
+function deleteEvent(id) {
+    var userselection = confirm("Are you sure you want to delete this event?");
+    if (userselection == true){
+        deleteData("event",id);
+        alert("Event deleted!");
+        requestData("events");
+    }
 }
 
 function loadCategoryTable(json) {
-
+    // TODO
 }
 
 function addEvent() {
     document.getElementById("testbutton").innerHTML += "Add entry wurde gedrückt! <br>";
     var form = document.createElement("form");
-
-
 }
