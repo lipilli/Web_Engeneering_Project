@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>Dynamic Calendar</title>
+    <link rel="stylesheet" href="../css/new.css">
+    <link rel="stylesheet" href="../css/our_style.css">
+    <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
+
+</head>
+<body>
+
+
+<header>
+    <h1>Dynamic Calendar</h1>
+    <br>
+    <p>
+        <a href="index.html">Home</a> /
+        <a href="about.html">About</a> /
+        <a href="contact.html">Contact</a> /
+        <a href="https://github.com/lipilli/Web_Engeneering_Project" target="_blank">GitHub</a>
+    </p>
+</header>
+
+<h3 id="calendar_entry_mode">Add Calender Entry</h3> <!-- TODO: in js insert "Eintrag hinzufügen/ändern"-->
+
+<div id="entry_form">
+    <form >
+
+        <label for="event_name" >Titel</label>
+        <input type="text" id="event_name" required>
+        <br>
+
+        <label for="status">Status</label>
+        <select id="status">
+            <option value="Free">Beschäftigt</option>
+            <option value="Busy">Frei</option>
+            <option value="Tentative">Unentschieden</option>
+        </select>
+        <br>
+
+        <label for="location">Ort</label>
+        <input type="text" id="location">
+        <br>
+
+        <label for="organizer">Organisator</label>
+        <input type="text" id="organizer">   <!--TODO error Handeling, max chars-->
+        <br>
+
+        <label for="all_day">Ganztägig</label>
+        <input type="checkbox" name="all_day" id="all_day">
+        <br>
+
+        <label for="start_date">Start</label>
+        <input type="date" id="start_date"> <!--TODO: set this to today-->
+        <input type="time" id="start_time" >
+        <br>
+
+        <label for="end_date">End</label>
+        <input type="date" id="end_date" >
+        <input type="time" id="end_time" >
+        <br>
+
+        <label for="webpage">Webseite</label>
+        <input type="text" id="webpage"> <!--TODO error Handeling, check if this is a webpage-->
+        <br>
+
+        <label for="image_upload">Bild</label>
+        <input type="file" onchange="convert_image_to_DataURL()" id="image_upload"> <!--TODO error Handeling, check if this is an image-->
+        <img src="" height="200" alt="Image preview">
+        <br>
+
+        <canvas id ="canvas"  width="100%">
+        </canvas>
+
+        <button type="button" onclick="uploadEvent()">Eintrag speichern</button>
+    </form>
+</div>
+
+<div id="table_test">
+    <table align="center" id="event_table" style="width: 900px"></table>
+</div>
+
+<br>
+
+<div id="testbutton"></div>
+</form><script src="../js/upload.js"></script>
+</body>
+</html>

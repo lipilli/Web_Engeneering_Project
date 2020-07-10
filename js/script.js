@@ -3,8 +3,8 @@ window.onload = function() {
 };
 
 function requestData(data) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             switch(data) {
                 case("events"):
@@ -17,8 +17,8 @@ function requestData(data) {
             }
         }
     };
-    xhttp.open("GET", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
-    xhttp.send();
+    xmlhttp.open("GET", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
+    xmlhttp.send();
 }
 
 function loadEventTable(json) {
@@ -76,12 +76,5 @@ function deleteEvent() {
 }
 
 function loadCategoryTable(json) {
-
-}
-
-function addEvent() {
-    document.getElementById("testbutton").innerHTML += "Add entry wurde gedrückt! <br>";
-    var form = document.createElement("form");
-
 
 }
