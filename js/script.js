@@ -2,8 +2,8 @@ var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "test";
 
 window.onload = function() {
-    requestData("events");
     requestData("categories");
+    requestData("events");
 };
 
 function requestData(data) {
@@ -44,23 +44,19 @@ function loadEventTable(json) {
     var image;
     var category;
 
-    console.log(parsed_events);
-
     for (var i=0; i<parsed_events.length; i++) {
         date = parsed_events[i].start.split("T", 1);
-
         if (parsed_events[i].allday === true) {
+
             time = "All Day";
         } else {
             time = parsed_events[i].start.split("T", 2)[1] + " - " + parsed_events[i].end.split("T", 2)[1];
         }
-
         if (parsed_events[i].webpage){
             page = parsed_events[i].webpage;
         }else{
             page = "No page";
         }
-
         if(parsed_events[i].imageurl === null) {
             img = "No image";
         } else {
@@ -84,10 +80,11 @@ function loadEventTable(json) {
             category + "</td><td>" +
             "<button onclick=\"editEvent("+parsed_events[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td></tr>";
     }
-    document.getElementById("event_table").innerHTML = addTableHeader() + events;
+
+    document.getElementById("event_table").innerHTML = addEventTableHeader() + events;
 }
 
-function addTableHeader() {
+function addEventTableHeader() {
     var table="<tr><th>Title</th><th>Status</th><th>Location</th><th>Organizer</th><th>Date and Time</th><th>Webpage</th><th>Image</th><th>Category</th><th>Actions</th></tr>";
     return table;
 }
@@ -108,7 +105,6 @@ function deleteEvent(id) {
 
 function loadCategoryTable(json) {
     var parsed_categories = JSON.parse(json.responseText);
-    console.log(parsed_categories);
 
     var categories = "<tr>";
     for (var i=0; i<parsed_categories.length; i++) {
@@ -116,5 +112,25 @@ function loadCategoryTable(json) {
     }
     categories = categories + "</tr>";
 
+    categories = categories + "<tr>";
+    for (var i=0; i<parsed_categories.length; i++) {
+        categories = categories + "<td>" + parsed_categories[i].id + "</td>";
+    }
+    categories = categories + "</tr>";
+
     document.getElementById("category_table").innerHTML = categories;
+}
+
+function addCategoryTableCounter() {
+    console.log(cat_list_len);
+    for (var i=0; i<cat_list_len; i++) {
+        console.log(cat_list[i]);
+    }
+    var counter = "<tr>";
+    for (var i=0; i<cat_list_len; i++) {
+        counter = counter + "<td>" + cat_list[i] + "<br>" + "</th>";
+    }
+    counter = counter + "</tr>";
+    var header = document.getElementById("category_table").innerHTML;
+    document.getElementById("category_table").innerHTML = header + counter;
 }
