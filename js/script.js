@@ -41,27 +41,31 @@ function loadEventTable(json) {
 
     console.log(parsed_events);
 
-    for (i in parsed_events) {
-        date = parsed_events[i].start.split("T", 1);
+    var table_div = document.getElementById("table-scroll");
+    var table_content = "<table align=\"center\" id=\"event_table\" style=\"width: 900px\"></table>"
+    table_div.innerHTML = table_content;
 
+
+    for (var i=0; i<parsed_events.length; i++) {
+        date = parsed_events[i].start.split("T", 1);
         if (parsed_events[i].allday === true) {
+
             time = "All Day";
         } else {
             time = parsed_events[i].start.split("T", 2)[1] + " - " + parsed_events[i].end.split("T", 2)[1];
         }
-
         if (parsed_events[i].webpage){
+
             page = parsed_events[i].webpage.split(".", 2)[1];
         }else{
             page = "";
         }
-
         if(parsed_events[i].imageurl === null) {
+
             img = "No Image";
         } else {
             img = "<img src=\"" + parsed_events[i].imageurl + "\" width=\"50\"\>"; //TODO Add alt text
         }
-
         events = events + "<tr><td>" +
             parsed_events[i].title + "</td><td>" +
             parsed_events[i].status + "</td><td>" +
@@ -71,7 +75,12 @@ function loadEventTable(json) {
             "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td>" +
             img + "</td><td>" +
             "<button onclick=\"editEvent("+parsed_events[i].id+")\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\">Delete</button>" + "</td></tr>";
+
+        if(parsed_events[i]){
+
+        }
     }
+
     document.getElementById("event_table").innerHTML = addTableHeader() + events;
 }
 
