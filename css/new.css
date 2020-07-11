@@ -76,7 +76,7 @@ html,input,select,button {
 body {
 	/* Center body in page */
 	margin: 0 auto;
-	max-width: 900px;
+	max-width: 950px;
 	padding: 2rem;
 	border-radius: 6px;
 	overflow-x: hidden;
@@ -86,7 +86,7 @@ body {
 
 	/* Main body text */
 	color: var(--nc-tx-2);
-	font-size: 0.8rem;
+	font-size: 0.9rem;
 	line-height: 1.5;
 }
 
@@ -211,7 +211,7 @@ button,
 input[type="submit"],
 input[type="reset"],
 input[type="button"] {
-	font-size: 1rem;
+	font-size: 0.8rem;
 	display: inline-block;
 	padding: 6px 12px;
 	text-align: center;
@@ -368,8 +368,8 @@ table {
 td,
 th {
 	border: 1px solid var(--nc-bg-3);
-	text-align: left;
-	padding: .3rem;
+	text-align: center;
+	padding: .2rem;
 }
 
 th {

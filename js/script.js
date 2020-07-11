@@ -1,3 +1,6 @@
+var url = "http://dhbw.radicalsimplicity.com/calendar/";
+var user = "test";
+
 window.onload = function() {
     requestData("events");
 };
@@ -16,16 +19,16 @@ function requestData(data) {
             }
         }
     };
-    xhttp.open("GET", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
+    xhttp.open("GET", url+user+"/"+data, true);
     xhttp.send();
 }
 
 function deleteData(data, id) {
     switch(data) {
-        case("event"):
+        case("events"):
             document.getElementById("testbutton").innerHTML += "Button Delete wurde gedrückt! <br>";
             var xhttp = new XMLHttpRequest();
-            xhttp.open("DELETE", "http://dhbw.radicalsimplicity.com/calendar/test/events/"+id, true);
+            xhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
             xhttp.send();
             break;
     }
@@ -38,6 +41,7 @@ function loadEventTable(json) {
     var time;
     var page;
     var image;
+    var category;
 
     console.log(parsed_events);
 
@@ -50,12 +54,18 @@ function loadEventTable(json) {
             time = parsed_events[i].start.split("T", 2)[1] + " - " + parsed_events[i].end.split("T", 2)[1];
         }
 
-        page = parsed_events[i].webpage.split(".", 2)[1];
+        page = parsed_events[i].webpage;
 
-        if(parsed_events[i].imageurl == null) {
+        if (parsed_events[i].imageurl == null) {
             img = "No Image";
         } else {
             img = "<img src=\"" + parsed_events[i].imageurl + "\" width=\"50\"\>";
+        }
+
+        if (parsed_events[i].categories.length == 0) {
+            category = "No category";
+        } else {
+            category = parsed_events[i].categories[0].name;
         }
 
         events = events + "<tr><td>" +
@@ -66,13 +76,14 @@ function loadEventTable(json) {
             date+"<br>"+time + "</td><td>" +
             "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td>" +
             img + "</td><td>" +
-            "<button onclick=\"editEvent("+parsed_events[i].id+")\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\">Delete</button>" + "</td></tr>";
+            category + "</td><td>" +
+            "<button onclick=\"editEvent("+parsed_events[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td></tr>";
     }
     document.getElementById("event_table").innerHTML = addTableHeader() + events;
 }
 
 function addTableHeader() {
-    var table="<tr><th>Title</th><th>Status</th><th>Location</th><th>Organizer</th><th>Date and Time</th><th>Webpage</th><th>Image</th><th>Actions</th></tr>";
+    var table="<tr><th>Title</th><th>Status</th><th>Location</th><th>Organizer</th><th>Date and Time</th><th>Webpage</th><th>Image</th><th>Category</th><th>Actions</th></tr>";
     return table;
 }
 
@@ -83,8 +94,8 @@ function editEvent(i) {
 
 function deleteEvent(id) {
     var userselection = confirm("Are you sure you want to delete this event?");
-    if (userselection == true){
-        deleteData("event",id);
+    if (userselection == true) {
+        deleteData("events",id);
         alert("Event deleted!");
         requestData("events");
     }
