@@ -8,7 +8,7 @@
 
 
 
-#entry_form{
+#entryFormDiv, #contactFormDiv{
     width: 40%;
     background-color: #F6F8FA;
     margin-left: 30%;
@@ -17,7 +17,7 @@
     line-height: 50px;
 }
 
-#calendar_entry_mode{
+#calendar_entry_mode, #contactFormHead{
     margin-left: 30%;
 }
 
