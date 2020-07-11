@@ -3,12 +3,13 @@ var user = "test";
 
 window.onload = function() {
     requestData("events");
+    requestData("categories");
 };
 
 function requestData(data) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState === 4 && this.status === 200) {
             switch(data) {
                 case("events"):
                     loadEventTable(this);
@@ -27,9 +28,9 @@ function deleteData(data, id) {
     switch(data) {
         case("events"):
             document.getElementById("testbutton").innerHTML += "Button Delete wurde gedrückt! <br>";
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
-            xhttp.send();
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
+            xmlhttp.send();
             break;
     }
 }
@@ -45,21 +46,25 @@ function loadEventTable(json) {
 
     console.log(parsed_events);
 
-    for (i in parsed_events) {
+    for (var i=0; i<parsed_events.length; i++) {
         date = parsed_events[i].start.split("T", 1);
 
-        if (parsed_events[i].allday == true) {
+        if (parsed_events[i].allday === true) {
             time = "All Day";
         } else {
             time = parsed_events[i].start.split("T", 2)[1] + " - " + parsed_events[i].end.split("T", 2)[1];
         }
 
-        page = parsed_events[i].webpage;
+        if (parsed_events[i].webpage){
+            page = parsed_events[i].webpage;
+        }else{
+            page = "No page";
+        }
 
-        if (parsed_events[i].imageurl == null) {
-            img = "No Image";
+        if(parsed_events[i].imageurl === null) {
+            img = "No image";
         } else {
-            img = "<img src=\"" + parsed_events[i].imageurl + "\" width=\"50\"\>";
+            img = "<img src=\"" + parsed_events[i].imageurl + "\" width=\"50\"\>"; //TODO Add alt text
         }
 
         if (parsed_events[i].categories.length == 0) {
@@ -69,13 +74,13 @@ function loadEventTable(json) {
         }
 
         events = events + "<tr><td>" +
-            parsed_events[i].title + "</td><td>" +
-            parsed_events[i].status + "</td><td>" +
+            parsed_events[i].title + "</td><td width=\"75\">" +
+            parsed_events[i].status + "</td><td width=\"100\">" +
             parsed_events[i].location + "</td><td>" +
-            "<a href=\"mailto:"+parsed_events[i].organizer+"\">"+parsed_events[i].organizer+"</a>" + "</td><td>" +
+            "<a href=\"mailto:"+parsed_events[i].organizer+"\">"+parsed_events[i].organizer+"</a>" + "</td><td width=\"125\">" +
             date+"<br>"+time + "</td><td>" +
-            "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td>" +
-            img + "</td><td>" +
+            "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td width=\"50\">" +
+            img + "</td><td width=\"75\">" +
             category + "</td><td>" +
             "<button onclick=\"editEvent("+parsed_events[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td></tr>";
     }
@@ -102,10 +107,14 @@ function deleteEvent(id) {
 }
 
 function loadCategoryTable(json) {
-    // TODO
-}
+    var parsed_categories = JSON.parse(json.responseText);
+    console.log(parsed_categories);
 
-function addEvent() {
-    document.getElementById("testbutton").innerHTML += "Add entry wurde gedrückt! <br>";
-    var form = document.createElement("form");
+    var categories = "<tr>";
+    for (var i=0; i<parsed_categories.length; i++) {
+        categories = categories + "<th>" + parsed_categories[i].name + "</th>";
+    }
+    categories = categories + "</tr>";
+
+    document.getElementById("category_table").innerHTML = categories;
 }
