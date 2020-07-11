@@ -120,17 +120,3 @@ function loadCategoryTable(json) {
 
     document.getElementById("category_table").innerHTML = categories;
 }
-
-function addCategoryTableCounter() {
-    console.log(cat_list_len);
-    for (var i=0; i<cat_list_len; i++) {
-        console.log(cat_list[i]);
-    }
-    var counter = "<tr>";
-    for (var i=0; i<cat_list_len; i++) {
-        counter = counter + "<td>" + cat_list[i] + "<br>" + "</th>";
-    }
-    counter = counter + "</tr>";
-    var header = document.getElementById("category_table").innerHTML;
-    document.getElementById("category_table").innerHTML = header + counter;
-}
