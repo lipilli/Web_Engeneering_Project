@@ -48,19 +48,17 @@ function loadEventTable(json) {
 
     for (var i=0; i<parsed_events.length; i++) {
         date = parsed_events[i].start.split("T", 1);
-
         if (parsed_events[i].allday === true) {
+
             time = "All Day";
         } else {
             time = parsed_events[i].start.split("T", 2)[1] + " - " + parsed_events[i].end.split("T", 2)[1];
         }
-
         if (parsed_events[i].webpage){
             page = parsed_events[i].webpage;
         }else{
             page = "No page";
         }
-
         if(parsed_events[i].imageurl === null) {
             img = "No image";
         } else {
@@ -84,6 +82,7 @@ function loadEventTable(json) {
             category + "</td><td>" +
             "<button onclick=\"editEvent("+parsed_events[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td></tr>";
     }
+
     document.getElementById("event_table").innerHTML = addTableHeader() + events;
 }
 
