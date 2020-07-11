@@ -12,6 +12,10 @@ var from_value_ids = [
     "webpage",
     "image_upload"];
 
+var form = document.getElementById("event_edit_form");
+function handleForm(event) { event.preventDefault(); }
+form.addEventListener('submit', handleForm);
+
 window.onload = function(){
     set_min_date_to_today();
     enable_times();
@@ -31,36 +35,27 @@ function uploadEvent() {
         status = this.status;
         console.log(xmlhttp.status);
         console.log(xmlhttp.readyState);
-        // Validate information was received
         if (this.readyState === 4 && this.status === 200) {
             alert("Your entry was added to the Calendar");
             userselection = confirm("Do you want to add another entry?");
-            if (userselection === true){
+            if (userselection === true) {
                 // Simulate an HTTP redirect:
-                window.location.replace("../HTML/edit_entry.html");
-            }else{
-                window.location.replace("../HTML/index.html");
+                window.location.replace("edit_entry.html");
+            } else {
+                window.location.replace("index.html");
             }
+        }if(this.status === 400){
+            console.log("sth. went wrong ");
         }
+        // Validate information was received
     }
     xmlhttp.open("POST", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(get_form_input());
-
 }
 
 function get_form_input() {
     // Get field values
-    var from_value_ids = [
-        "event_name",
-        "location",
-        "organizer",
-        "start_date", "start_time",
-        "end_date", "end_time",
-        "status",
-        "all_day",
-        "webpage",
-        "image_upload"];
     var form_values = [];
     from_value_ids.forEach(function(item_id){
         form_values.push(document.getElementById(item_id).value);
@@ -81,6 +76,7 @@ function get_form_input() {
         categories: null,
         extra: null
         });
+    console.log(message);
     return message;
     }
 
@@ -90,9 +86,6 @@ function convert_image_to_DataURL(){
     var image = document.getElementById("image_upload");
     var background = new Image();
     background.src = URL.createObjectURL(image.files[0]);
-
-    console.log(image.value);
-    console.log(URL.createObjectURL(image.files[0]));
 
     //Background.onload = onload_of_image(background);
     background.onload = function (){
@@ -105,7 +98,6 @@ function convert_image_to_DataURL(){
         context.height = background.height;
         context.drawImage(background, 0, 0);
         image_URL = canvas.toDataURL('image/jpeg');
-
     }
 
 }
@@ -139,7 +131,6 @@ function set_min_date_to_today() {
     today = year+'-'+month+'-'+day;
     document.getElementById("start_date").min = today;
     document.getElementById("end_date").min = today;
-    console.log(document.getElementById("start_date"));
 
 }
 
