@@ -25,11 +25,11 @@
 
 <h3 id="calendar_entry_mode">Add Calender Entry</h3> <!-- TODO: in js insert "Eintrag hinzufügen/ändern"-->
 
-<div id="entry_form">
+<div id="entryFormDiv">
     <form id="event_edit_form" onsubmit="uploadEvent()">
 
         <label for="event_name" >Title</label>
-        <input type="text" id="event_name" size="20" maxlength="50" required value="Test">
+        <input type="text" id="event_name" size="20" maxlength="50" required >
         <br>
 
         <label for="status">Status</label>
@@ -53,17 +53,17 @@
         <br>
 
         <label for="start_date">Start</label>
-        <input type="date" id="start_date" required value = "2020-12-09">
+        <input type="date" id="start_date" required onchange="setEndDateMin()" >
         <input type="time" id="start_time" required >
         <br>
 
         <label for="end_date">End</label>
-        <input type="date" id="end_date" required value = "2020-12-09">
+        <input type="date" id="end_date" required >
         <input type="time" id="end_time" required>
         <br>
 
         <label for="webpage">Web page</label>
-        <input type="text" id="webpage" placeholder="www.example.com" pattern="(https?:\/\/)?(www\.)?[a-zA-Z0-9._&'+*-]+\.[a-zA-z0-9._&'+*-]+(\/[a-zA-z0-9._&'+*-]*)*">
+        <input type="text" id="webpage" placeholder="www.example.com" pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?">
         <br>
 
         <label for="image_upload">Picture</label>

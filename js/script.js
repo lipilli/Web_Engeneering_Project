@@ -1,8 +1,9 @@
 window.onload = function() {
-    requestData("events");
+    requestData("events", "");
 };
 
-function requestData(data) {
+function requestData(data, id) {
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
@@ -13,10 +14,21 @@ function requestData(data) {
                 case("categories"):
                     loadCategoryTable(this);
                     break;
+                case("event"):
+                    transform_response(this, id);
             }
         }
     };
-    xhttp.open("GET", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
+    var url;
+    if(id != ""){
+        var num = id;
+        var num_str = "/"+num.toString()
+        url = "http://dhbw.radicalsimplicity.com/calendar/test/events"+num_str;
+    }else{
+        url = "http://dhbw.radicalsimplicity.com/calendar/test/events"+id;
+    }
+
+    xhttp.open("GET", url, true);
     xhttp.send();
 }
 
@@ -38,8 +50,8 @@ function loadEventTable(json) {
     var date;
     var time;
     var page;
+    var image;
 
-    console.log(parsed_events);
 
     var table_div = document.getElementById("table-scroll");
     var table_content = "<table align=\"center\" id=\"event_table\" style=\"width: 900px\"></table>"
@@ -90,8 +102,7 @@ function addTableHeader() {
 }
 
 function editEvent(i) {
-    document.getElementById("testbutton").innerHTML += "Button Edit wurde gedrückt! <br>";
-    console.log(i);
+    requestData("event", i);
 }
 
 function deleteEvent(id) {
@@ -99,11 +110,59 @@ function deleteEvent(id) {
     if (userselection === true){
         deleteData("event",id);
         alert("Event deleted!");
-        requestData("events");
+        requestData("events", "");
     }
 }
 
-function loadCategoryTable(json) {
-    // TODO
+function transform_response(json,i) {
+    var parsed_event = JSON.parse(json.responseText);
+    console.log(json);
+    var webpage;
+    var location;
+    var start_time;
+    var end_time;
+    var start_date;
+    var end_date;
+    var page;
+
+
+        start_date = parsed_event.start.split("T", 1);
+        end_date = parsed_event.end.split("T", 1);
+
+        if (parsed_event.allday === true) {
+            start_time = "00:00";
+            end_time = "23:59";
+        } else {
+            start_time = parsed_event.start.split("T", 2)[1];
+            end_time= parsed_event.end.split("T", 2)[1];
+        }
+        if (parsed_event.webpage){
+            webpage = parsed_event.webpage;
+        }else{
+            page = "";
+        }
+        if (parsed_event.location){
+            location = parsed_event.location
+        }else{
+            location = "";
+        }
+
+        var transformed = JSON.stringify({
+            title: parsed_event.title,
+            location: location,
+            organizer: parsed_event.organizer,
+            start_date:start_date,
+            start_time: start_time,
+            end_date:end_date,
+            end_time:end_time,
+            status: parsed_event.status,
+            allday: parsed_event.status,
+            webpage: webpage,
+            imageurl: parsed_event.imageurl,
+            categories: parsed_event.categories,
+            extra: parsed_event.extra
+        });
+        sessionStorage.setItem(i,transformed);
+        window.location.replace("edit_entry.html?"+i);
 }
 

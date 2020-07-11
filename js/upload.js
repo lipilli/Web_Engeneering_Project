@@ -1,6 +1,8 @@
 var image_URL = null;
+var imageLink = null;
 var windowLoads = 0; // save in session storage
 console.log(windowLoads);
+var queryString = location.search.substring(1);
 var from_value_ids = [
     "event_name",
     "location",
@@ -17,6 +19,9 @@ function handleForm(event) { event.preventDefault(); }
 form.addEventListener('submit', handleForm);
 
 window.onload = function(){
+    preFill(queryString);
+
+    console.log(queryString);
     set_min_date_to_today();
     enable_times();
     windowLoads++;
@@ -36,6 +41,7 @@ function uploadEvent() {
         console.log(xmlhttp.status);
         console.log(xmlhttp.readyState);
         if (this.readyState === 4 && this.status === 200) {
+            linkImage();
             alert("Your entry was added to the Calendar");
             userselection = confirm("Do you want to add another entry?");
             if (userselection === true) {
@@ -131,7 +137,10 @@ function set_min_date_to_today() {
     today = year+'-'+month+'-'+day;
     document.getElementById("start_date").min = today;
     document.getElementById("end_date").min = today;
+}
 
+function setEndDateMin() {
+    document.getElementById("end_date").min = document.getElementById("start_date").value;
 }
 
 function enable_times() {
@@ -145,4 +154,31 @@ function deleteImageUpload() {
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function preFill(queryString) {
+    if(queryString){
+        var entry = sessionStorage.getItem(queryString);
+        var entryJSON = JSON.parse(entry);
+        console.log(entryJSON);
+    document.getElementById("calendar_entry_mode").innerHTML = "Edit Calendar Entry";
+    document.getElementById("event_name").value = entryJSON.title;
+    document.getElementById("status").value = entryJSON.status;
+    document.getElementById("location").value = entryJSON.location;
+    document.getElementById("all_day").checked = entryJSON.allday;
+    document.getElementById("start_date").value = entryJSON.start_date;
+    document.getElementById("start_time").value = entryJSON.start_time;
+    document.getElementById("end_date").value = entryJSON.end_date;
+    document.getElementById("end_time").value = entryJSON.end_time;
+    document.getElementById("webpage").value = entryJSON.webpage;
+    if(entryJSON.imageurl){
+        imageLink = entryJSON.imageurl;
+    };
+    }
+}
+
+function linkImage() {
+    if(imageLink){
+
+    }
 }

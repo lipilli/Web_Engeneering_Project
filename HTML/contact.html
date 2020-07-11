@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <title>Dynamic Calendar</title>
-    <link rel="stylesheet" href="css/new.css">
+    <link rel="stylesheet" href="../css/new.css">
+    <link rel="stylesheet" href="../css/our_style.css">
     <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
   </head>
   <body>
@@ -20,18 +21,39 @@
       </p>
     </header>
 
-    <h1>Contact us!</h1>
-    
-    <form>
-      <p>
-        Anrede:
-        <select id="id_anrede" name="anrede">
-        <option value="herr" autofocus>Herr</option>
-        <option value="frau">Frau</option>
-        <option value="sonst">Sonstige</option>
+    <h1 id="contactFormHead">Contact us!</h1>
+
+    <div id="contactFormDiv">
+
+      <form id="contactForm" action="mailto:viet.dang@nokia.com" method="post" enctype="text/plain" onsubmit="location.href='index.html';">
+        <label for="salutation">Salutation</label>
+        <select id="salutation">
+          <option selected="selected" value="Mr">Mr</option>
+          <option value = "Mrs">Mrs</option>
+          <option value = "Ms">Ms</option>
         </select>
-      </p>
-    </form>
+
+        <br>
+
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" placeholder="Please enter your first name." required ="required" autofocus>
+
+        <br>
+
+
+        <label for="lastName">Name:</label>
+        <input type="text" id="lastName" placeholder="Please enter your last name." required ="required">
+
+        <br>
+
+        <label for="message">Message</label>
+        <br>
+        <textarea id="message" rows="8" cols="80" placeholder="Say Hello :)"></textarea>
+        <br>
+
+        <button type="submit">Send</button>
+      </form>
+    </div>
     
   </body>
 </html>
