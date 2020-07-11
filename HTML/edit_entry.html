@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
@@ -26,55 +26,55 @@
 <h3 id="calendar_entry_mode">Add Calender Entry</h3> <!-- TODO: in js insert "Eintrag hinzufügen/ändern"-->
 
 <div id="entry_form">
-    <form >
+    <form id="event_edit_form">
 
         <label for="event_name" >Titel</label>
-        <input type="text" id="event_name" required>
+        <input type="text" id="event_name" maxlength="30" required>
         <br>
 
         <label for="status">Status</label>
         <select id="status">
-            <option value="Free">Beschäftigt</option>
-            <option value="Busy">Frei</option>
+            <option value="Free">Frei </option>
+            <option value="Busy">Beschäftigt</option>
             <option value="Tentative">Unentschieden</option>
         </select>
         <br>
 
         <label for="location">Ort</label>
-        <input type="text" id="location">
+        <input type="text" id="location" maxlength="30" >
         <br>
 
         <label for="organizer">Organisator</label>
-        <input type="text" id="organizer">   <!--TODO error Handeling, max chars-->
+        <input type="text" id="organizer" maxlength="30" pattern =  "[a-zA-Z0-9._&'+*-]+@[a-zA-z0-9._&'+*-]+\.[a-zA-z0-9._&'+*-]*">   <!--TODO error Handeling, max chars-->
         <br>
 
         <label for="all_day">Ganztägig</label>
-        <input type="checkbox" name="all_day" id="all_day">
+        <input type="checkbox" id="all_day" onclick="validate_all_day()">
         <br>
 
         <label for="start_date">Start</label>
-        <input type="date" id="start_date"> <!--TODO: set this to today-->
-        <input type="time" id="start_time" >
+        <input type="date" id="start_date" required>
+        <input type="time" id="start_time" required>
         <br>
 
         <label for="end_date">End</label>
-        <input type="date" id="end_date" >
-        <input type="time" id="end_time" >
+        <input type="date" id="end_date" required>
+        <input type="time" id="end_time" required>
         <br>
 
         <label for="webpage">Webseite</label>
-        <input type="text" id="webpage"> <!--TODO error Handeling, check if this is a webpage-->
+        <input type="text" id="webpage" pattern="(https?:\/\/)?(www\.)?[a-zA-Z0-9._&'+*-]+\.[a-zA-z0-9._&'+*-]+(\/[a-zA-z0-9._&'+*-]*)*">
         <br>
 
         <label for="image_upload">Bild</label>
-        <input type="file" onchange="convert_image_to_DataURL()" id="image_upload"> <!--TODO error Handeling, check if this is an image-->
-        <img src="" height="200" alt="Image preview">
+        <input type="file" onchange="convert_image_to_DataURL()" id="image_upload" pattern="[a-zA-Z0-9§$&_.-\{\}\[\]'äAöÖüÜ]*[(.png)(.jpeg)(.jpg)]">
+        <button type="button" onclick="deleteImageUpload()">Delete</button>
         <br>
-
+        <!--Image preview-->
         <canvas id ="canvas"  width="100%">
         </canvas>
 
-        <button type="button" onclick="uploadEvent()">Eintrag speichern</button>
+        <button type="submit" onclick="uploadEvent()">Eintrag speichern</button>
     </form>
 </div>
 
@@ -85,6 +85,6 @@
 <br>
 
 <div id="testbutton"></div>
-</form><script src="../js/upload.js"></script>
+<script src="../js/upload.js"></script>
 </body>
 </html>
