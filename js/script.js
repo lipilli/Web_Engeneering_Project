@@ -1,5 +1,6 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "test";
+var alarmTimes = [];
 window.onload = function() {
     loadData("categories");
     loadData("events");
@@ -24,82 +25,91 @@ function loadData(data) {
 }
 
 function loadEventTable(json) {
-    var parsedEvents = JSON.parse(json.responseText);
+    var response = JSON.parse(json.responseText);
+    var parsedEvent;
+
+
     var events;
     var datetime;
     var page;
     var img;
     var category;
 
-    for (var i=0; i<parsed_events.length; i++) {
-        startdate = parsed_events[i].start.split("T", 2)[0];
-        starttime = parsed_events[i].start.split("T", 2)[1];
-        enddate = parsed_events[i].end.split("T", 2)[0];
-        endtime = parsed_events[i].end.split("T", 2)[1];
+    for (var i=0; i<response.length; i++) {
+        parsedEvent = JSON.parse(transformResponse(response[i]));
+        startdate = parsedEvent.start_date;
+        starttime = parsedEvent.start_time;
+        enddate = parsedEvent.end_date;
+        endtime = parsedEvent.end_time;
 
         if (startdate === enddate) {
-            if (parsed_events[i].allday === true) {
+            if (parsedEvent.allday === true) {
                 datetime = startdate + "<br>" + "All day";
             } else {
                 datetime = startdate + "<br>" + starttime + "-" + endtime;
-            } 
+            }
         } else {
-            if (parsed_events[i].allday === true) {
+            if (parsedEvent.allday === true) {
                 datetime = startdate + "<br>-<br>" + enddate;
             } else {
                 datetime = startdate + " " + starttime + "<br>-<br>" + enddate + " " + endtime;
             }
         }
         
-        if (parsed_events[i].webpage){
-            page = parsed_events[i].webpage;
+        if (parsedEvent.webpage){
+            page = parsedEvent.webpage;
         }else{
             page = "No page";
         }
-        if(parsedEvents[i].imageurl === null) {
+        if(parsedEvent.imageurl === null) {
             img = "No image";
         } else {
-            img = "<img src=\"" + parsedEvents[i].imageurl + "\" width=\"50\"\>";
+            img = "<img src=\"" + parsedEvent.imageurl + "\" width=\"50\"\>";
         }
 
-        if (parsedEvents[i].categories.length === 0) {
+        if (parsedEvent.categories.length === 0) {
             category = "No category";
         } else {
-            category = parsedEvents[i].categories[0].name;
+            category = parsedEvent.categories[0].name;
         }
 
-        events = events + "<tr><td>" +
-            parsed_events[i].title + "</td><td width=\"75\">" +
-            parsed_events[i].status + "</td><td width=\"100\">" +
-            parsed_events[i].location + "</td><td>" +
-            "<a href=\"mailto:"+parsed_events[i].organizer+"\">"+parsed_events[i].organizer+"</a>" + "</td><td width=\"125\">" +
-            datetime + "</td><td>" +
-            "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td width=\"50\">" +
-            img + "</td><td width=\"75\">" +
-            category + "</td><td>" +
-            "<button onclick=\"editEvent("+parsed_events[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td></tr>";
+        events = events +
+            "<tr>" +
+                "<td>" + parsedEvent.title + "</td>" +
+                "<td width=\"75\">" + parsedEvent.status + "</td>" +
+                "<td width=\"100\">" + parsedEvent.location + "</td><td>" +
+                "<a href=\"mailto:"+parsedEvent.organizer+"\">"+parsedEvent.organizer+"</a>" + "</td>" +
+                "<td width=\"125\">" + datetime + "</td>" +
+                "<td>" + "<a href=\""+parsedEvent.webpage+"\">"+page+"</a>" + "</td>" +
+                "<td width=\"50\">" + img + "</td>" +
+                "<td width=\"75\">" + category + "</td>" +
+                "<td>" + "<button onclick=\"editEvent("+parsedEvent.id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsedEvent.id+")\" style=\"width: 100%\">Delete</button>" + "</td>" +
+            "</tr>";
     }
 
     document.getElementById("event_table").innerHTML = addEventTableHeader() + events;
 }
 
 function addEventTableHeader() {
-     var tableHead = "<tr><th>Title</th>" +
-        "<th>Status</th>" +
-        "<th>Location</th>" +
-        "<th>Organizer</th>" +
-        "<th>Date and Time</th>" +
-        "<th>Webpage</th>" +
-        "<th>Image</th>" +
-        "<th>Category</th>" +
-        "<th>Actions</th></tr>";
+     var tableHead =
+         "<tr>" +
+             "<th>Title</th>" +
+            "<th>Status</th>" +
+            "<th>Location</th>" +
+            "<th>Organizer</th>" +
+            "<th>Date and Time</th>" +
+            "<th>Webpage</th>" +
+            "<th>Image</th>" +
+            "<th>Category</th>" +
+            "<th>Actions</th>" +
+         "</tr>";
 
     return tableHead
 }
 
 function deleteEvent(id) {
     var userselection = confirm("Are you sure you want to delete this event?");
-    if (userselection == true) {
+    if (userselection === true) {
         deleteData("events",id); //
         alert("Event deleted!");
         loadData("events");
@@ -123,9 +133,8 @@ function editEvent(id) {
     xmlhttp.open("GET", url+user+"/events/"+id, true);
     xmlhttp.onreadystatechange = function() {
         if(this.status ===200 && this.readyState===4){
-             resp = this;
-            var eventInStorageFormat = transformResponse(this);
-            console.log(eventInStorageFormat);
+            var responseJSON = JSON.parse(this.responseText);
+            var eventInStorageFormat = transformResponse(responseJSON);
             sessionStorage.setItem(id,eventInStorageFormat);
             window.location.replace("edit_entry.html?"+id);
         }
@@ -155,8 +164,8 @@ function loadCategoryTable(json) {
 }
 
 function transformResponse(json) {
-    console.log(json);
-    var parsed_event = JSON.parse(json.responseText);
+
+    var parsed_event = json;
     var webpage;
     var location;
     var start_time;
@@ -164,6 +173,7 @@ function transformResponse(json) {
     var start_date;
     var end_date;
 
+    console.log(parsed_event);
 
     start_date = parsed_event.start.split("T", 1);
     end_date = parsed_event.end.split("T", 1);
