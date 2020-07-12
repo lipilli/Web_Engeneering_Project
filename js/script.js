@@ -26,21 +26,33 @@ function loadData(data) {
 function loadEventTable(json) {
     var parsedEvents = JSON.parse(json.responseText);
     var events;
-    var date;
-    var time;
+    var datetime;
     var page;
+    var img;
     var category;
 
-    for (var i=0; i<parsedEvents.length; i++) {
-        date = parsedEvents[i].start.split("T", 1);
-        if (parsedEvents[i].allday === true) {
+    for (var i=0; i<parsed_events.length; i++) {
+        startdate = parsed_events[i].start.split("T", 2)[0];
+        starttime = parsed_events[i].start.split("T", 2)[1];
+        enddate = parsed_events[i].end.split("T", 2)[0];
+        endtime = parsed_events[i].end.split("T", 2)[1];
 
-            time = "All Day";
+        if (startdate === enddate) {
+            if (parsed_events[i].allday === true) {
+                datetime = startdate + "<br>" + "All day";
+            } else {
+                datetime = startdate + "<br>" + starttime + "-" + endtime;
+            } 
         } else {
-            time = parsedEvents[i].start.split("T", 2)[1] + " - " + parsedEvents[i].end.split("T", 2)[1];
+            if (parsed_events[i].allday === true) {
+                datetime = startdate + "<br>-<br>" + enddate;
+            } else {
+                datetime = startdate + " " + starttime + "<br>-<br>" + enddate + " " + endtime;
+            }
         }
-        if (parsedEvents[i].webpage){
-            page = parsedEvents[i].webpage;
+        
+        if (parsed_events[i].webpage){
+            page = parsed_events[i].webpage;
         }else{
             page = "No page";
         }
@@ -56,17 +68,16 @@ function loadEventTable(json) {
             category = parsedEvents[i].categories[0].name;
         }
 
-        // Inserting new event row
-        events = events + "<tr>" +
-            "<td>" + parsedEvents[i].title + "</td>" +
-            "<td width=\"75\">" + parsedEvents[i].status + "</td>" +
-            "<td width=\"100\">" + parsedEvents[i].location + "</td>" +
-            "<td>" + "<a href=\"mailto:"+parsedEvents[i].organizer+"\">"+parsedEvents[i].organizer+"</a>" + "</td>" +
-            "<td width=\"125\">" + date+"<br>"+time + "</td>" +
-            "<td>" + "<a href=\""+parsedEvents[i].webpage+"\">"+page+"</a>" + "</td>" +
-            "<td width=\"50\">" + img + "</td><td width=\"75\">" + category + "</td>" +
-            "<td>" + "<button onclick=\"editEvent("+parsedEvents[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsedEvents[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td>" +
-            "</tr>";
+        events = events + "<tr><td>" +
+            parsed_events[i].title + "</td><td width=\"75\">" +
+            parsed_events[i].status + "</td><td width=\"100\">" +
+            parsed_events[i].location + "</td><td>" +
+            "<a href=\"mailto:"+parsed_events[i].organizer+"\">"+parsed_events[i].organizer+"</a>" + "</td><td width=\"125\">" +
+            datetime + "</td><td>" +
+            "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td width=\"50\">" +
+            img + "</td><td width=\"75\">" +
+            category + "</td><td>" +
+            "<button onclick=\"editEvent("+parsed_events[i].id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsed_events[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td></tr>";
     }
 
     document.getElementById("event_table").innerHTML = addEventTableHeader() + events;
