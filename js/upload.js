@@ -171,9 +171,10 @@ function preFill(queryString) {
     document.getElementById("end_date").value = entryJSON.end_date;
     document.getElementById("end_time").value = entryJSON.end_time;
     document.getElementById("webpage").value = entryJSON.webpage;
+    document.getElementById("organizer").value = entryJSON.organizer;
     if(entryJSON.imageurl){
         imageLink = entryJSON.imageurl;
-    };
+        };
     }
 }
 
