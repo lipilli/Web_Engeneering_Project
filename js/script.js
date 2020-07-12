@@ -1,6 +1,8 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "test";
 var alarmTimes = [];
+var alarmSound = new Audio("../Resources/alarm.mp3")
+
 window.onload = function() {
     loadData("categories");
     loadData("events");
@@ -22,6 +24,7 @@ function loadData(data) {
     };
     xhttp.open("GET", url+user+"/"+data, true);
     xhttp.send();
+    //setAlarms(alarmTimes);
 }
 
 function loadEventTable(json) {
@@ -41,8 +44,8 @@ function loadEventTable(json) {
         starttime = parsedEvent.start_time;
         enddate = parsedEvent.end_date;
         endtime = parsedEvent.end_time;
-
         if (startdate === enddate) {
+
             if (parsedEvent.allday === true) {
                 datetime = startdate + "<br>" + "All day";
             } else {
@@ -55,8 +58,8 @@ function loadEventTable(json) {
                 datetime = startdate + " " + starttime + "<br>-<br>" + enddate + " " + endtime;
             }
         }
-        
         if (parsedEvent.webpage){
+
             page = parsedEvent.webpage;
         }else{
             page = "No page";
@@ -66,13 +69,12 @@ function loadEventTable(json) {
         } else {
             img = "<img src=\"" + parsedEvent.imageurl + "\" width=\"50\"\>";
         }
-
         if (parsedEvent.categories.length === 0) {
+
             category = "No category";
         } else {
             category = parsedEvent.categories[0].name;
         }
-
         events = events +
             "<tr>" +
                 "<td>" + parsedEvent.title + "</td>" +
@@ -85,9 +87,14 @@ function loadEventTable(json) {
                 "<td width=\"75\">" + category + "</td>" +
                 "<td>" + "<button onclick=\"editEvent("+parsedEvent.id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsedEvent.id+")\" style=\"width: 100%\">Delete</button>" + "</td>" +
             "</tr>";
+
+        // Add starts for the alarms
+        alarmTimes.push([parsedEvent.extra,startdate, starttime, parsedEvent.title]);
     }
 
     document.getElementById("event_table").innerHTML = addEventTableHeader() + events;
+    setAlarms(alarmTimes);
+
 }
 
 function addEventTableHeader() {
@@ -140,7 +147,6 @@ function editEvent(id) {
         }
     };
     xmlhttp.send();
-
 }
 
 
@@ -173,10 +179,8 @@ function transformResponse(json) {
     var start_date;
     var end_date;
 
-    console.log(parsed_event);
-
-    start_date = parsed_event.start.split("T", 1);
-    end_date = parsed_event.end.split("T", 1);
+    start_date = parsed_event.start.split("T", 1)[0];
+    end_date = parsed_event.end.split("T", 1)[0];
 
     if (parsed_event.allday === true) {
         start_time = "00:00";
@@ -206,11 +210,77 @@ function transformResponse(json) {
         end_date:end_date,
         end_time:end_time,
         status: parsed_event.status,
-        allday: parsed_event.status,
+        allday: parsed_event.allday,
         webpage: webpage,
         imageurl: parsed_event.imageurl,
         categories: parsed_event.categories,
         extra: parsed_event.extra
     });
     return transformed;
+}
+function setAlarms(alarmInfos){
+
+    var AlarmTimes = [];
+    var alarmTime;
+    var timeDiffernce;
+    console.log(alarmInfos)
+    console.log(typeof (alarmInfos))
+    console.log(alarmInfos.length)
+
+
+    for(var i=0; i<alarmInfos.length;i++){
+
+        // Check if alarm was set
+        if(alarmInfos[i][0] === true){
+            // check if alarm is in the past
+            alarmTime = getAlarmTime(alarmInfos[i]);
+            console.log(alarmInfos[i])
+            timeDiffernce = alarmTime.getTime() - (new Date()).getTime();
+
+            if(timeDiffernce > 0) {
+                // Append Time until counter goes of and event name
+                AlarmTimes.push([timeDiffernce, alarmInfos[i][3]]);
+            }
+        }
+    }
+    console.log(AlarmTimes);
+    setInterval(countDown, 1000);
+
+    function countDown(){
+        for(i = 0; i<AlarmTimes.length; i++){
+            //Count down one second
+            AlarmTimes[i][0] = AlarmTimes[i][0] - 1000;
+            if(AlarmTimes[i][0]<0){
+                setOffAlarm(AlarmTimes[i][1]);
+                AlarmTimes.splice(i, 1);
+            }
+        }
+    }
+}
+
+function getAlarmTime(info) {
+    var yyyy;
+    var mm;
+    var dd;
+    var hour;
+    var min;
+    var alarmTime;
+    if(info[0] === true){
+        var date = info[1].split("-", 3);
+        var time = info[2].split(":",2);
+        yyyy = parseInt(date[0]);
+        mm = parseInt(date[1])-1; // Jan is 1
+        dd = parseInt(date[2]);
+        hour = parseInt(time[0]);
+        min = parseInt(time[1]);
+
+        alarmTime = new Date(yyyy, mm, dd, hour, min);
+    }
+    return alarmTime;
+}
+
+
+function setOffAlarm(eventName){
+    alarmSound.play();
+    alert("Your event: "+eventName+" is happening now!");
 }
