@@ -21,7 +21,6 @@ form.addEventListener('submit', handleForm);
 window.onload = function(){
     preFill(queryString);
 
-    console.log(queryString);
     set_min_date_to_today();
     enable_times();
     windowLoads++;
@@ -32,7 +31,10 @@ window.onload = function(){
         }
     }
 }
+
 function uploadEvent() {
+    setMinTimes(document.getElementById("start_date").value);
+
     var xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = function () {
@@ -80,8 +82,10 @@ function get_form_input() {
         webpage: form_values[9],
         imagedata: image_URL,
         categories: null,
-        extra: null
+        extra: document.getElementById("setAlarm").checked
+        //extra: document.getElementById("setAlarm").checked
         });
+    console.log("document.getElementById(\"setAlarm\").checked");
     console.log(message);
     return message;
     }
@@ -111,7 +115,7 @@ function convert_image_to_DataURL(){
 function validate_all_day() {
     var startTime = document.getElementById("start_time");
     var endTime = document.getElementById("end_time");
-    if(document.getElementById("all_day").checked === true){
+    if(document.getElementById("all_day").checked === false){
         startTime.value = "00:00";
         endTime.value = "23:59";
         startTime.disabled = true;
@@ -143,6 +147,23 @@ function setEndDateMin() {
     document.getElementById("end_date").min = document.getElementById("start_date").value;
 }
 
+function setMinTimes(start_date) {
+    var date = start_date.split("-", 3);
+    var yyyy = parseInt(date[0]);
+    var mm = parseInt(date[1])-1; // Jan is 1
+    var dd = parseInt(date[2]);
+    start_date = new Date(yyyy, mm, dd);
+    var now = new Date();
+
+    if(start_date.getFullYear() === now.getFullYear() &&
+        start_date.getMonth() ===  now.getMonth() &&
+        start_date.getDay() === now.getMonth()){
+        document.getElementById("start_time").min = now.getHours()+":"+now.getMinutes();
+        document.getElementById("end_time").min = now.getHours()+":"+now.getMinutes();
+    }
+}
+
+
 function enable_times() {
     document.getElementById("start_time").disabled = false;
     document.getElementById("end_time").disabled = false;
@@ -164,6 +185,7 @@ function preFill(queryString) {
     document.getElementById("calendar_entry_mode").innerHTML = "Edit Calendar Entry";
     document.getElementById("event_name").value = entryJSON.title;
     document.getElementById("status").value = entryJSON.status;
+    //document.getElementById("category").value = entryJSON.categories[0];
     document.getElementById("location").value = entryJSON.location;
     document.getElementById("all_day").checked = entryJSON.allday;
     document.getElementById("start_date").value = entryJSON.start_date;
@@ -182,4 +204,25 @@ function linkImage() {
     if(imageLink){
 
     }
+}
+
+function getAlarmTime(info) {
+    var yyyy;
+    var mm;
+    var dd;
+    var hour;
+    var min;
+    var alarmTime;
+    if(info[0] === true){
+        var date = info[1].split("-", 3);
+        var time = info[2].split(":",2);
+        yyyy = parseInt(date[0]);
+        mm = parseInt(date[1])-1; // Jan is 1
+        dd = parseInt(date[2]);
+        hour = parseInt(time[0]);
+        min = parseInt(time[1]);
+
+        alarmTime = new Date(yyyy, mm, dd, hour, min);
+    }
+    return alarmTime;
 }

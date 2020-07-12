@@ -21,6 +21,10 @@
     margin-left: 30%;
 }
 
+#labelSetAlarm {
+    margin-left: 30px;
+}
+
 input[type=text] {
     background: transparent;
     border: none;
