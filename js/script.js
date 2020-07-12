@@ -2,7 +2,8 @@ var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "test";
 
 window.onload = function() {
-    requestData("events", "");
+    requestData("categories");
+    requestData("events");
 };
 
 function requestData(data, id) {
@@ -22,16 +23,7 @@ function requestData(data, id) {
             }
         }
     };
-    var url;
-    if(id != ""){
-        var num = id;
-        var num_str = "/"+num.toString()
-        url = "http://dhbw.radicalsimplicity.com/calendar/test/events"+num_str;
-    }else{
-        url = "http://dhbw.radicalsimplicity.com/calendar/test/events"+id;
-    }
-
-    xhttp.open("GET", url, true);
+    xhttp.open("GET", url+user+"/"+data, true);
     xhttp.send();
 }
 
@@ -52,13 +44,6 @@ function loadEventTable(json) {
     var date;
     var time;
     var page;
-    var image;
-
-
-    var table_div = document.getElementById("table-scroll");
-    var table_content = "<table align=\"center\" id=\"event_table\" style=\"width: 900px\"></table>"
-    table_div.innerHTML = table_content;
-
     var image;
     var category;
 
@@ -88,8 +73,8 @@ function loadEventTable(json) {
         }
 
         events = events + "<tr><td>" +
-            parsed_events[i].title + "</td><td>" +
-            parsed_events[i].status + "</td><td>" +
+            parsed_events[i].title + "</td><td width=\"75\">" +
+            parsed_events[i].status + "</td><td width=\"100\">" +
             parsed_events[i].location + "</td><td>" +
             "<a href=\"mailto:"+parsed_events[i].organizer+"\">"+parsed_events[i].organizer+"</a>" + "</td><td width=\"125\">" +
             date+"<br>"+time + "</td><td>" +
@@ -120,57 +105,14 @@ function deleteEvent(id) {
     }
 }
 
-function transform_response(json,i) {
-    var parsed_event = JSON.parse(json.responseText);
-    console.log(json);
-    var webpage;
-    var location;
-    var start_time;
-    var end_time;
-    var start_date;
-    var end_date;
-    var page;
+function loadCategoryTable(json) {
+    var parsed_categories = JSON.parse(json.responseText);
 
-
-        start_date = parsed_event.start.split("T", 1);
-        end_date = parsed_event.end.split("T", 1);
-
-        if (parsed_event.allday === true) {
-            start_time = "00:00";
-            end_time = "23:59";
-        } else {
-            start_time = parsed_event.start.split("T", 2)[1];
-            end_time= parsed_event.end.split("T", 2)[1];
-        }
-        if (parsed_event.webpage){
-            webpage = parsed_event.webpage;
-        }else{
-            page = "";
-        }
-        if (parsed_event.location){
-            location = parsed_event.location
-        }else{
-            location = "";
-        }
-
-        var transformed = JSON.stringify({
-            title: parsed_event.title,
-            location: location,
-            organizer: parsed_event.organizer,
-            start_date:start_date,
-            start_time: start_time,
-            end_date:end_date,
-            end_time:end_time,
-            status: parsed_event.status,
-            allday: parsed_event.status,
-            webpage: webpage,
-            imageurl: parsed_event.imageurl,
-            categories: parsed_event.categories,
-            extra: parsed_event.extra
-        });
-        sessionStorage.setItem(i,transformed);
-        window.location.replace("edit_entry.html?"+i);
-
+    var categories = "<tr>";
+    for (var i=0; i<parsed_categories.length; i++) {
+        categories = categories + "<th>" + parsed_categories[i].name + "</th>";
+    }
+    categories = categories + "</tr>";
 
     categories = categories + "<tr>";
     for (var i=0; i<parsed_categories.length; i++) {
