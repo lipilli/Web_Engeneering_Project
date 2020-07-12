@@ -46,20 +46,31 @@ function deleteData(data, id) {
 function loadEventTable(json) {
     var parsed_events = JSON.parse(json.responseText);
     var events;
-    var date;
-    var time;
+    var datetime;
     var page;
-    var image;
+    var img;
     var category;
 
     for (var i=0; i<parsed_events.length; i++) {
-        date = parsed_events[i].start.split("T", 1);
-        if (parsed_events[i].allday === true) {
+        startdate = parsed_events[i].start.split("T", 2)[0];
+        starttime = parsed_events[i].start.split("T", 2)[1];
+        enddate = parsed_events[i].end.split("T", 2)[0];
+        endtime = parsed_events[i].end.split("T", 2)[1];
 
-            time = "All Day";
+        if (startdate === enddate) {
+            if (parsed_events[i].allday === true) {
+                datetime = startdate + "<br>" + "All day";
+            } else {
+                datetime = startdate + "<br>" + starttime + "-" + endtime;
+            } 
         } else {
-            time = parsed_events[i].start.split("T", 2)[1] + " - " + parsed_events[i].end.split("T", 2)[1];
+            if (parsed_events[i].allday === true) {
+                datetime = startdate + "<br>-<br>" + enddate;
+            } else {
+                datetime = startdate + " " + starttime + "<br>-<br>" + enddate + " " + endtime;
+            }
         }
+        
         if (parsed_events[i].webpage){
             page = parsed_events[i].webpage;
         }else{
@@ -82,7 +93,7 @@ function loadEventTable(json) {
             parsed_events[i].status + "</td><td width=\"100\">" +
             parsed_events[i].location + "</td><td>" +
             "<a href=\"mailto:"+parsed_events[i].organizer+"\">"+parsed_events[i].organizer+"</a>" + "</td><td width=\"125\">" +
-            date+"<br>"+time + "</td><td>" +
+            datetime + "</td><td>" +
             "<a href=\""+parsed_events[i].webpage+"\">"+page+"</a>" + "</td><td width=\"50\">" +
             img + "</td><td width=\"75\">" +
             category + "</td><td>" +
