@@ -1,13 +1,11 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "test";
-
 window.onload = function() {
-    requestData("categories");
-    requestData("events");
+    requestData("categories", "");
+    requestData("events", "");
 };
 
 function requestData(data, id) {
-
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
@@ -23,6 +21,13 @@ function requestData(data, id) {
             }
         }
     };
+    if(id != "" && data === "event"){
+        var num = id;
+        var num_str = num.toString()
+        data = "events/"+num_str
+    }
+    console.log("hello");
+
     xhttp.open("GET", url+user+"/"+data, true);
     xhttp.send();
 }
@@ -121,4 +126,56 @@ function loadCategoryTable(json) {
     categories = categories + "</tr>";
 
     document.getElementById("category_table").innerHTML = categories;
+}
+
+function transform_response(json,i) {
+    var parsed_event = JSON.parse(json.responseText);
+    console.log(json);
+    var webpage;
+    var location;
+    var start_time;
+    var end_time;
+    var start_date;
+    var end_date;
+    var page;
+
+
+    start_date = parsed_event.start.split("T", 1);
+    end_date = parsed_event.end.split("T", 1);
+
+    if (parsed_event.allday === true) {
+        start_time = "00:00";
+        end_time = "23:59";
+    } else {
+        start_time = parsed_event.start.split("T", 2)[1];
+        end_time= parsed_event.end.split("T", 2)[1];
+    }
+    if (parsed_event.webpage){
+        webpage = parsed_event.webpage;
+    }else{
+        page = "";
+    }
+    if (parsed_event.location){
+        location = parsed_event.location
+    }else{
+        location = "";
+    }
+
+    var transformed = JSON.stringify({
+        title: parsed_event.title,
+        location: location,
+        organizer: parsed_event.organizer,
+        start_date:start_date,
+        start_time: start_time,
+        end_date:end_date,
+        end_time:end_time,
+        status: parsed_event.status,
+        allday: parsed_event.status,
+        webpage: webpage,
+        imageurl: parsed_event.imageurl,
+        categories: parsed_event.categories,
+        extra: parsed_event.extra
+    });
+    sessionStorage.setItem(i,transformed);
+    window.location.replace("edit_entry.html?"+i);
 }
