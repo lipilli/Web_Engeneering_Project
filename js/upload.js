@@ -152,7 +152,7 @@ function enable_times() {
 function deleteImageUpload() {
     document.getElementById("image_upload").value = null;
     var canvas = document.getElementById("canvas");
-    var context = canvas.getContext("2d"git );
+    var context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
