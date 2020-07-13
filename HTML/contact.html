@@ -54,6 +54,18 @@
         <button type="submit">Send</button>
       </form>
     </div>
-    
+    <script >
+      // Prevent user from going forward and backwards
+      window.addEventListener( "pageshow", function ( event ) {
+        window.history.forward(1)
+        var historyTraversal = event.persisted ||
+                ( typeof window.performance != "undefined" &&
+                        window.performance.navigation.type === 2 );
+        if ( historyTraversal ) {
+          // Handle page restore.
+          window.location.reload();
+        }
+      });
+    </script>
   </body>
 </html>

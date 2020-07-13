@@ -22,19 +22,53 @@
     </header>
 
     <h1>About</h1>
-    <p>
-      <table>
-        <tr>
-          <th>Project name</th>
-          <th>Authors</th>
-          <th>Description</th>
-        </tr>
-        <tr>
-          <td>Dynamic Calendar</td>
-          <td>Deborah Djon, Viet Dang</td>
-          <td>This repository contains a dynamic web application project in part of the Web-Engineering I course.</td>
-        </tr>
-      </table>
-    </p>
+
+    <div id="aboutPage">
+      <h3>General</h3>
+      <p>
+        <b>Project name:</b> Dynamic Calendar <br>
+        <b>Authors:</b> Deborah Djon, Viet Dang <br>
+      </p>
+
+      <h3>Description</h3>
+      <p>
+        This Page contains a dynamic web application project in part of the Web-Engineering I course.
+      </p>
+
+
+      <h3>Basic Fearures</h3>
+      <ul>
+        <li>Show calendar entries</li>
+        <li>Create calendar entry</li>
+        <li>Edit calendar entries</li>
+        <li>Delete calendar entriies</li>
+        <li>Image for calendar entry</li>
+      </ul>
+
+
+      <h3>Enhanced Features</h3>
+        <li>Allerts with sound (sound needs to be enabled by the user) </li>
+        <li>Back button handling</li>
+        <li>Reload button handling</li>
+        <li>Show categories on server</li>
+        <li>Categories in entry form are pulled from the server</li>
+        <li>About page</li>
+        <li>Contact Form</li>
+        <li>Image preview when editing or adding an entry</li>
+        <li>Extra page for editing or adding an entry</li>
+    </div>
+    <script>
+      // Prevent user from going forward and backwards
+      window.addEventListener( "pageshow", function ( event ) {
+        window.history.forward(1)
+        var historyTraversal = event.persisted ||
+                ( typeof window.performance != "undefined" &&
+                        window.performance.navigation.type === 2 );
+        if ( historyTraversal ) {
+          // Handle page restore.
+          window.location.reload();
+        }
+      });
+    </script>
   </body>
 </html>
