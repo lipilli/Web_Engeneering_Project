@@ -236,9 +236,6 @@ function setAlarms(alarmInfos){
     var AlarmTimes = [];
     var alarmTime;
     var timeDiffernce;
-    console.log(alarmInfos)
-    console.log(typeof (alarmInfos))
-    console.log(alarmInfos.length)
 
 
     for(var i=0; i<alarmInfos.length;i++){
