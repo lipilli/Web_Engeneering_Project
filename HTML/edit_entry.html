@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <title>Dynamic Calendar</title>
-    <link rel="stylesheet" href="../css/new.css">
-    <link rel="stylesheet" href="../css/our_style.css">
+    <link rel="stylesheet" href="../CSS/new.css">
+    <link rel="stylesheet" href="../CSS/our_style.css">
     <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
 
 </head>
@@ -16,7 +16,7 @@
     <h1>Dynamic Calendar</h1>
     <br>
     <p>
-        <a href="index.html">Home</a> /
+        <a href="index.html" onclick="{resetWindowLoads('reset')}">Home</a> /
         <a href="about.html">About</a> /
         <a href="contact.html">Contact</a> /
         <a href="https://github.com/lipilli/Web_Engeneering_Project" target="_blank">GitHub</a>
@@ -41,13 +41,7 @@
         <br>
 
         <label for="category">Category</label>
-        <select id="category">
-            <option value="Hollyday">Hollyday </option>
-            <option value="Travel">Travel</option>
-            <option value="Offsite">Offsite</option>
-            <option value="Work">Work</option>
-            <option value="Festival">Festival</option>
-        </select>
+        <select id="category"></select>
         <br>
 
         <label for="location">Location</label>
@@ -76,7 +70,7 @@
         <br>
 
         <label for="webpage">Web page</label>
-        <input type="text" id="webpage" placeholder="www.example.com" pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?">
+        <input type="text" id="webpage" placeholder="www.example.com" pattern="^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$">
         <br>
 
         <label for="image_upload">Picture</label>

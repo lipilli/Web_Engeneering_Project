@@ -8,6 +8,17 @@ window.onload = function() {
     loadData("events");
 };
 
+// Prevent user from going forward and backwards
+window.addEventListener( "pageshow", function ( event ) {
+    window.history.forward(1)
+    var historyTraversal = event.persisted ||
+        ( typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2 );
+    if ( historyTraversal ) {
+        // Handle page restore.
+        window.location.reload();
+    }
+});
 function loadData(data) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -153,20 +164,22 @@ function editEvent(id) {
 
 function loadCategoryTable(json) {
     var parsed_categories = JSON.parse(json.responseText);
-
+    var storeCtegories = [];
     var categories = "<tr>";
     for (var i=0; i<parsed_categories.length; i++) {
+        storeCtegories.push(parsed_categories[i].name)
         categories = categories + "<th>" + parsed_categories[i].name + "</th>";
     }
     categories = categories + "</tr>";
-
     categories = categories + "<tr>";
+
     for ( i=0; i<parsed_categories.length; i++) {
         categories = categories + "<td>" + parsed_categories[i].id + "</td>";
     }
     categories = categories + "</tr>";
-
     document.getElementById("category_table").innerHTML = categories;
+
+    sessionStorage.setItem("categories", storeCtegories);
 }
 
 function transformResponse(json) {

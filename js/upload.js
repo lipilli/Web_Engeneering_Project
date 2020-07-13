@@ -1,7 +1,8 @@
+var url = "http://dhbw.radicalsimplicity.com/calendar/";
+var user = "9537809";
 var image_URL = null;
 var imageLink = null;
-var windowLoads = 0; // save in session storage
-console.log(windowLoads);
+var windowLoads = sessionStorage.getItem("windowLoads"); // save in session storage
 var queryString = location.search.substring(1);
 var from_value_ids = [
     "event_name",
@@ -19,21 +20,53 @@ function handleForm(event) { event.preventDefault(); }
 form.addEventListener('submit', handleForm);
 
 window.onload = function(){
+    loadCategoryOptions();
     preFill(queryString);
-
     set_min_date_to_today();
     enable_times();
-    windowLoads++;
-    if(windowLoads>1){
-        userselection = confirm("Are you sure u want to reload?\n All your data will be lost.");
+    console.log(windowLoads);
+    windowLoads = resetWindowLoads();
+}
+
+// Prevent user from going forward and backwards
+window.addEventListener( "pageshow", function ( event ) {
+    window.history.forward(1);
+    var historyTraversal = event.persisted ||
+        ( typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2 );
+    if ( historyTraversal ) {
+        // Handle page restore.
+        window.location.reload();
+        resetWindowLoads("reset");
+    }
+});
+
+
+// Check
+function resetWindowLoads(option) {
+    if(option === "reset"){
+        sessionStorage.setItem("windowLoads","0");
+    }else if(windowLoads == null){
+        sessionStorage.setItem("windowLoads","0");
+    }else if(parseInt(windowLoads)===0){
+        windowLoads = 1;
+        sessionStorage.setItem("windowLoads", "1");
+    }else if(parseInt(windowLoads)>0){
+        console.log(windowLoads);
+        var userselection = confirm("Are you sure u want to reload?\n All your data will be lost.");
         if(userselection === true){
             document.getElementById("event_edit_form").reset();
-        }
+            windowLoads = parseInt(sessionStorage.getItem("windowLoads"))+1;
+            sessionStorage.setItem("windowLoads", windowLoads.toString());
+            }
     }
 }
 
 function uploadEvent() {
-    setMinTimes(document.getElementById("start_date").value);
+    // Making sure min dates and times have not been reached when submitting
+    setMinTimes(document.getElementById("start_date").value, document.getElementById("end_date").value);
+    setEndDateMin();
+    set_min_date_to_today();
 
     var xmlhttp = new XMLHttpRequest();
 
@@ -50,6 +83,7 @@ function uploadEvent() {
                 // Simulate an HTTP redirect:
                 window.location.replace("edit_entry.html");
             } else {
+                resetWindowLoads("reset");
                 window.location.replace("index.html");
             }
         }if(this.status === 400){
@@ -60,7 +94,20 @@ function uploadEvent() {
     xmlhttp.open("POST", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(get_form_input());
+    var summissionCount = sessionStorage.getItem("submissionFailCount");
+
+    // Try to submit once more so min Times and Dates get set
+    if(summissionCount){
+        if(parseInt(summissionCount) === 1){
+            uploadEvent();
+            summissionCount = parseInt(summissionCount)+1;
+            sessionStorage.setItem("submissionFailCount", summissionCount)
+        }else{
+            sessionStorage.setItem("submissionFailCount", 0);
+        }
+    }
 }
+
 
 function get_form_input() {
     // Get field values
@@ -125,7 +172,6 @@ function validate_all_day() {
     }
 }
 
-
 function set_min_date_to_today() {
     var today = new Date();
     var day = today.getDate();
@@ -137,7 +183,6 @@ function set_min_date_to_today() {
     if(month<10){
         month='0'+month
     }
-
     today = year+'-'+month+'-'+day;
     document.getElementById("start_date").min = today;
     document.getElementById("end_date").min = today;
@@ -147,20 +192,68 @@ function setEndDateMin() {
     document.getElementById("end_date").min = document.getElementById("start_date").value;
 }
 
-function setMinTimes(start_date) {
+function setMinTimes(start_date, end_date) {
+
     var date = start_date.split("-", 3);
     var yyyy = parseInt(date[0]);
     var mm = parseInt(date[1])-1; // Jan is 1
     var dd = parseInt(date[2]);
+    var min;
+    var hour;
     start_date = new Date(yyyy, mm, dd);
     var now = new Date();
 
+    // Start Time
     if(start_date.getFullYear() === now.getFullYear() &&
         start_date.getMonth() ===  now.getMonth() &&
-        start_date.getDay() === now.getMonth()){
-        document.getElementById("start_time").min = now.getHours()+":"+now.getMinutes();
-        document.getElementById("end_time").min = now.getHours()+":"+now.getMinutes();
+        start_date.getDay() === now.getDay()){
+
+        if(now.getHours()<10){
+            hour = '0'+now.getHours();
+        }else{
+            hour = now.getHours();
+        }
+        if(now.getMinutes()<10){
+            min = now.getMinutes();
+        }else{
+            min = now.getMinutes();
+        }
+        // For some reason hours and minutes are switched...
+        var currentTimeString = hour+":"+min;
+        document.getElementById("start_time").min = currentTimeString;
     }
+
+    // End Time
+    mm = parseInt(date[1])-1; // Jan is 1
+    date = end_date.split("-", 3);
+    yyyy = parseInt(date[0]);
+    dd = parseInt(date[2]);
+    min;
+    hour;
+    end_date = new Date(yyyy, mm, dd);
+    now = new Date();
+
+    if(end_date.getFullYear() === now.getFullYear() &&
+        end_date.getMonth() ===  now.getMonth() &&
+        end_date.getDay() === now.getDay()){
+
+        if(now.getHours()<10){
+            hour = '0'+now.getHours();
+        }else{
+            hour = now.getHours();
+        }
+        if(now.getMinutes()<10){
+            min = now.getMinutes();
+        }else{
+            min = now.getMinutes();
+        }
+        // For some reason hours and minutes are switched...
+        currentTimeString = hour+":"+min;
+        document.getElementById("end_time").min = currentTimeString;
+    }
+
+
+
 }
 
 
@@ -185,7 +278,7 @@ function preFill(queryString) {
     document.getElementById("calendar_entry_mode").innerHTML = "Edit Calendar Entry";
     document.getElementById("event_name").value = entryJSON.title;
     document.getElementById("status").value = entryJSON.status;
-    //document.getElementById("category").value = entryJSON.categories[0];
+    document.getElementById("category").value = entryJSON.categories[0].name;
     document.getElementById("location").value = entryJSON.location;
     document.getElementById("all_day").checked = entryJSON.allday;
     document.getElementById("start_date").value = entryJSON.start_date;
@@ -194,6 +287,9 @@ function preFill(queryString) {
     document.getElementById("end_time").value = entryJSON.end_time;
     document.getElementById("webpage").value = entryJSON.webpage;
     document.getElementById("organizer").value = entryJSON.organizer;
+
+
+    ///???
     if(entryJSON.imageurl){
         imageLink = entryJSON.imageurl;
         };
@@ -202,27 +298,17 @@ function preFill(queryString) {
 
 function linkImage() {
     if(imageLink){
-
     }
 }
 
-function getAlarmTime(info) {
-    var yyyy;
-    var mm;
-    var dd;
-    var hour;
-    var min;
-    var alarmTime;
-    if(info[0] === true){
-        var date = info[1].split("-", 3);
-        var time = info[2].split(":",2);
-        yyyy = parseInt(date[0]);
-        mm = parseInt(date[1])-1; // Jan is 1
-        dd = parseInt(date[2]);
-        hour = parseInt(time[0]);
-        min = parseInt(time[1]);
-
-        alarmTime = new Date(yyyy, mm, dd, hour, min);
-    }
-    return alarmTime;
+function loadCategoryOptions(){
+       var categoryOptions = sessionStorage.getItem("categories");
+       categoryOptions = categoryOptions.split(",");
+       console.log(typeof (categoryOptions));
+       categoryOptions.forEach(function(category){
+            document.getElementById("category").innerHTML =
+                document.getElementById("category").innerHTML +
+                "<option value=\"Hollyday\">"+category+"</option>"
+       });
 }
+
