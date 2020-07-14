@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>Dynamic Calendar</title>
+    <link rel="stylesheet" href="../CSS/new.css">
+    <link rel="stylesheet" href="../CSS/our_style.css">
+    <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
+
+</head>
+<body>
+
+
+<header>
+    <h1>Dynamic Calendar</h1>
+    <br>
+    <p>
+        <a href="index.html" onclick="{resetWindowLoads('reset')}">Home</a> /
+        <a href="about.html">About</a> /
+        <a href="contact.html">Contact</a> /
+        <a href="https://github.com/lipilli/Web_Engeneering_Project" target="_blank">GitHub</a>
+    </p>
+</header>
+
+<h3 id="header3">Add Category</h3>
+
+<div id="FormDiv">
+    <form id="edit_form" onsubmit="uploadCategory()">
+        <label for="category_title" >Title</label>
+        <input type="text" id="category_name" size="20" maxlength="50" required >
+        <br>
+        <button type="submit">Safe</button>
+    </form>
+</div>
+
+<script src="../js/upload.js"></script>
+</body>
+</html>

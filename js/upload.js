@@ -1,10 +1,10 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
-var user = "9537809";
+var user = "test";
 var image_URL = null;
 var imageLink = null;
 var windowLoads = sessionStorage.getItem("windowLoads"); // save in session storage
 var queryString = location.search.substring(1);
-var from_value_ids = [
+var entry_form_value_ids = [
     "event_name",
     "location",
     "organizer",
@@ -14,18 +14,22 @@ var from_value_ids = [
     "all_day",
     "webpage",
     "image_upload"];
-
-var form = document.getElementById("event_edit_form");
+var category_form_value_ids = ["category_name"];
+var form = document.getElementById("edit_form");
 function handleForm(event) { event.preventDefault(); }
 form.addEventListener('submit', handleForm);
 
 window.onload = function(){
-    loadCategoryOptions();
-    preFill(queryString);
-    set_min_date_to_today();
-    enable_times();
-    console.log(windowLoads);
-    windowLoads = resetWindowLoads();
+    if (window.location.href.match('edit_entry.html')) {
+        loadCategoryOptions();
+        preFillEntry(queryString);
+        set_min_date_to_today();
+        enable_times();
+        console.log(windowLoads);
+        windowLoads = resetWindowLoads();
+    } else if (window.location.href.match('edit_category.html')) {
+        preFillCategory(queryString);
+    }
 }
 
 // Prevent user from going forward and backwards
@@ -41,7 +45,6 @@ window.addEventListener( "pageshow", function ( event ) {
     }
 });
 
-
 // Check
 function resetWindowLoads(option) {
     if(option === "reset"){
@@ -55,10 +58,10 @@ function resetWindowLoads(option) {
         console.log(windowLoads);
         var userselection = confirm("Are you sure u want to reload?\n All your data will be lost.");
         if(userselection === true){
-            document.getElementById("event_edit_form").reset();
+            document.getElementById("edit_form").reset();
             windowLoads = parseInt(sessionStorage.getItem("windowLoads"))+1;
             sessionStorage.setItem("windowLoads", windowLoads.toString());
-            }
+        }
     }
 }
 
@@ -91,9 +94,9 @@ function uploadEvent() {
         }
         // Validate information was received
     }
-    xmlhttp.open("POST", "http://dhbw.radicalsimplicity.com/calendar/test/events", true);
+    xmlhttp.open("POST", url+user+"/events", true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.send(get_form_input());
+    xmlhttp.send(get_entry_form_input());
     var summissionCount = sessionStorage.getItem("submissionFailCount");
 
     // Try to submit once more so min Times and Dates get set
@@ -109,10 +112,10 @@ function uploadEvent() {
 }
 
 
-function get_form_input() {
+function get_entry_form_input() {
     // Get field values
     var form_values = [];
-    from_value_ids.forEach(function(item_id){
+    entry_form_value_ids.forEach(function(item_id){
         form_values.push(document.getElementById(item_id).value);
     });
 
@@ -251,17 +254,12 @@ function setMinTimes(start_date, end_date) {
         currentTimeString = hour+":"+min;
         document.getElementById("end_time").min = currentTimeString;
     }
-
-
-
 }
-
 
 function enable_times() {
     document.getElementById("start_time").disabled = false;
     document.getElementById("end_time").disabled = false;
 }
-
 
 function deleteImageUpload() {
     document.getElementById("image_upload").value = null;
@@ -270,28 +268,26 @@ function deleteImageUpload() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function preFill(queryString) {
+function preFillEntry(queryString) {
     if(queryString){
         var entry = sessionStorage.getItem(queryString);
         var entryJSON = JSON.parse(entry);
         console.log(entryJSON);
-    document.getElementById("calendar_entry_mode").innerHTML = "Edit Calendar Entry";
-    document.getElementById("event_name").value = entryJSON.title;
-    document.getElementById("status").value = entryJSON.status;
-    document.getElementById("category").value = entryJSON.categories[0].name;
-    document.getElementById("location").value = entryJSON.location;
-    document.getElementById("all_day").checked = entryJSON.allday;
-    document.getElementById("start_date").value = entryJSON.start_date;
-    document.getElementById("start_time").value = entryJSON.start_time;
-    document.getElementById("end_date").value = entryJSON.end_date;
-    document.getElementById("end_time").value = entryJSON.end_time;
-    document.getElementById("webpage").value = entryJSON.webpage;
-    document.getElementById("organizer").value = entryJSON.organizer;
-
-
-    ///???
-    if(entryJSON.imageurl){
-        imageLink = entryJSON.imageurl;
+        document.getElementById("header3").innerHTML = "Edit Calendar Entry";
+        document.getElementById("event_name").value = entryJSON.title;
+        document.getElementById("status").value = entryJSON.status;
+        document.getElementById("category").value = entryJSON.categories[0].name;
+        document.getElementById("location").value = entryJSON.location;
+        document.getElementById("all_day").checked = entryJSON.allday;
+        document.getElementById("start_date").value = entryJSON.start_date;
+        document.getElementById("start_time").value = entryJSON.start_time;
+        document.getElementById("end_date").value = entryJSON.end_date;
+        document.getElementById("end_time").value = entryJSON.end_time;
+        document.getElementById("webpage").value = entryJSON.webpage;
+        document.getElementById("organizer").value = entryJSON.organizer;
+        ///???
+        if(entryJSON.imageurl){
+            imageLink = entryJSON.imageurl;
         };
     }
 }
@@ -312,3 +308,50 @@ function loadCategoryOptions(){
        });
 }
 
+function uploadCategory() {
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function () {
+        readyState = this.readyState;
+        status = this.status;
+        console.log(xmlhttp.status);
+        console.log(xmlhttp.readyState);
+        if (this.readyState === 4 && this.status === 200) {
+            alert("Your category was added to the calendar!");
+            window.location.replace("index.html");
+        } else if(this.status === 400){
+            console.log("sth. went wrong ");
+        } else if(this.status === 500) {
+            alert("This category allready exists. Try another name!");
+            window.location.replace("edit_category.html");
+        }
+        // Validate information was received
+    }
+    xmlhttp.open("POST", url+user+"/categories", true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.send(get_category_form_input());
+}
+
+function get_category_form_input() {
+    var form_values = [];
+    category_form_value_ids.forEach(function(item_id){
+        form_values.push(document.getElementById(item_id).value);
+    });
+
+    // Convert input into string with json format
+    var message = JSON.stringify({
+        name: form_values[0]
+    });
+    console.log(message);
+    return message;
+}
+
+function preFillCategory(queryString) {
+    if(queryString){
+        var entry = sessionStorage.getItem(queryString);
+        var entryJSON = JSON.parse(entry);
+        console.log(entryJSON);
+        document.getElementById("header3").innerHTML = "Edit Category";
+        document.getElementById("category_name").value = entryJSON.name;
+    }
+}
