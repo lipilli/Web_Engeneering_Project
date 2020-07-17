@@ -77,6 +77,7 @@ function uploadEvent() {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
+            linkImage();
             alert("Your entry was added to the Calendar");
             userselection = confirm("Do you want to add another entry?");
             if (userselection === true) {
