@@ -15,7 +15,7 @@ var entry_form_value_ids = [
     "all_day",
     "webpage",
     "image_upload",
-    "categories"];
+    "category"];
 
 var category_form_value_ids = ["category_name"];
 var form = document.getElementById("edit_form");
@@ -24,10 +24,10 @@ form.addEventListener('submit', handleForm);
 
 window.onload = function(){
     if (window.location.href.match('edit_entry.html')) {
-        loadCategoryOptions();
+        loadCategories();
         preFillEntry(queryString);
-        set_min_date_to_today();
-        enable_times();
+        setMinDateToToday();
+        enableTimes();
         console.log(windowLoads);
         windowLoads = resetWindowLoads();
     } else if (window.location.href.match('edit_category.html')) {
@@ -72,15 +72,10 @@ function uploadEvent() {
     // Making sure min dates and times have not been reached when submitting
     setMinTimes(document.getElementById("start_date").value, document.getElementById("end_date").value);
     setEndDateMin();
-    set_min_date_to_today();
+    setMinDateToToday();
 
     var xmlhttp = new XMLHttpRequest();
-
     xmlhttp.onreadystatechange = function () {
-        readyState = this.readyState;
-        status = this.status;
-        console.log(xmlhttp.status);
-        console.log(xmlhttp.readyState);
         if (this.readyState === 4 && this.status === 200) {
             linkImage();
             alert("Your entry was added to the Calendar");
@@ -101,7 +96,7 @@ function uploadEvent() {
 
     xmlhttp.open("POST", url+user+"/events", true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.send(get_entry_form_input());
+    xmlhttp.send(getInputFromEntryForm());
     var summissionCount = sessionStorage.getItem("submissionFailCount");
 
     // Try to submit once more so min Times and Dates get set
@@ -116,14 +111,18 @@ function uploadEvent() {
     }
 }
 
-function get_entry_form_input() {
+function getInputFromEntryForm() {
     // Get field values
     var form_values = [];
     entry_form_value_ids.forEach(function(item_id){
         form_values.push(document.getElementById(item_id).value);
     });
-    var categories;
 
+    var categoryNumber =form_values[11];
+    console.log(categoryNumber);
+    if (categoryNumber != "None"){
+        categoryNumber = [{id:categoryNumber}];
+    }else{categoryNumber = null}
 
     // Convert input into string with json format
     var message = JSON.stringify({
@@ -136,7 +135,7 @@ function get_entry_form_input() {
         allday: document.getElementById("all_day").checked,
         webpage: form_values[9],
         imagedata: image_URL,
-        categories: document.getElementById("all_day"),
+        categories: categoryNumber,
         extra: document.getElementById("setAlarm").checked
         //extra: document.getElementById("setAlarm").checked
         });
@@ -145,7 +144,7 @@ function get_entry_form_input() {
     return message;
     }
 
-function convert_image_to_DataURL(){
+function convertImageToDataURL(){
 
     var image = document.getElementById("image_upload");
     var background = new Image();
@@ -166,7 +165,7 @@ function convert_image_to_DataURL(){
 
 }
 
-function validate_all_day() {
+function validateAllDayOption() {
     var startTime = document.getElementById("start_time");
     var endTime = document.getElementById("end_time");
     if(document.getElementById("all_day").checked === true){
@@ -175,11 +174,11 @@ function validate_all_day() {
         startTime.disabled = true;
         endTime.disabled = true;
     }else{
-        enable_times();
+        enableTimes();
     }
 }
 
-function set_min_date_to_today() {
+function setMinDateToToday() {
     var today = new Date();
     var day = today.getDate();
     var month = today.getMonth()+1;
@@ -260,7 +259,7 @@ function setMinTimes(start_date, end_date) {
     }
 }
 
-function enable_times() {
+function enableTimes() {
     document.getElementById("start_time").disabled = false;
     document.getElementById("end_time").disabled = false;
 }
@@ -295,7 +294,7 @@ function preFillEntry(queryString) {
         ///???
         if(entryJSON.imageurl){
             imageLink = entryJSON.imageurl;
-        };
+        }
     }
 }
 
@@ -304,21 +303,31 @@ function linkImage() {
     }
 }
 
-function loadCategoryOptions(){
-       var categoryOptions = sessionStorage.getItem("categories");
-       categoryOptions = categoryOptions.split(",");
+function loadCategories(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            importCategoryOptions(this);
+        }
+    };
+    xhttp.open("GET", url+user+"/categories", true);
+    xhttp.send();
+}
 
-       // Category option "None"
-       document.getElementById("category").innerHTML =
-           document.getElementById("category").innerHTML +
-           "<option value=\"None\">None</option>";
+function importCategoryOptions(json) {
+    var parsedCategories = JSON.parse(json.responseText);
 
-       // Load Categories
-       categoryOptions.forEach(function(category){
-           document.getElementById("category").innerHTML=
-               document.getElementById("category").innerHTML +
-               "<option value="+category+">"+category+"</option>";
-       });
+    // Category option "None"
+    document.getElementById("category").innerHTML =
+        document.getElementById("category").innerHTML +
+        "<option value=\"None\">None</option>";
+
+    // Load Categories
+    parsedCategories.forEach(function(category){
+        document.getElementById("category").innerHTML=
+            document.getElementById("category").innerHTML +
+            "<option value="+category.id+">"+category.name+"</option>";
+    });
 }
 
 function uploadCategory() {
@@ -342,10 +351,10 @@ function uploadCategory() {
     }
     xmlhttp.open("POST", url+user+"/categories", true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.send(get_category_form_input());
+    xmlhttp.send(getCategoryFormInput());
 }
 
-function get_category_form_input() {
+function getCategoryFormInput() {
     var form_values = [];
     category_form_value_ids.forEach(function(item_id){
         form_values.push(document.getElementById(item_id).value);
