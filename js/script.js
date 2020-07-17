@@ -1,5 +1,7 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
-var user = "test";
+var user = "7035821";
+// var user = "9537809-7035821";
+
 var alarmTimes = [];
 var alarmSound = new Audio("../Resources/alarm.mp3")
 
@@ -41,6 +43,7 @@ function loadData(data) {
 
 function loadEventTable(json) {
     var response = JSON.parse(json.responseText);
+    console.log(response);
     var parsedEvent;
 
     var events;
@@ -185,7 +188,7 @@ function loadCategoryTable(json) {
 }
 
 function checkAmountOfCategories() {
-    if (sessionStorage.category_count >= 10) {
+    if (sessionStorage.category_count > 10) {
         alert("You cannot have more than 10 categories. Please delete some first to add more!");
     } else {
         window.location.replace("edit_category.html");
@@ -201,6 +204,7 @@ function transformResponseEvent(json) {
     var end_time;
     var start_date;
     var end_date;
+    var categories;
 
     start_date = parsed_event.start.split("T", 1)[0];
     end_date = parsed_event.end.split("T", 1)[0];
@@ -222,6 +226,11 @@ function transformResponseEvent(json) {
     }else{
         location = "";
     }
+    if (parsed_event.categories.length == 0){
+        categories = [{id: 0, name: "none"}];
+    }else{
+        categories = parsed_event.categories;
+    }
 
     var transformed = JSON.stringify({
         id: parsed_event.id,
@@ -236,7 +245,7 @@ function transformResponseEvent(json) {
         allday: parsed_event.allday,
         webpage: webpage,
         imageurl: parsed_event.imageurl,
-        categories: parsed_event.categories,
+        categories: categories,
         extra: parsed_event.extra
     });
     return transformed;
@@ -308,7 +317,6 @@ function getAlarmTime(info) {
     }
     return alarmTime;
 }
-
 
 function setOffAlarm(eventName){
     alarmSound.play();

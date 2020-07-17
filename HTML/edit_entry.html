@@ -49,11 +49,12 @@
         <br>
 
         <label for="organizer">Organisator</label>
-        <input type="text" id="organizer" size="20" maxlength="50" placeholder="example@web.com" pattern =  "[a-zA-Z0-9._&'+*-]+@[a-zA-z0-9._&'+*-]+\.[a-zA-z0-9._&'+*-]+" required>   <!--TODO error Handeling, max chars-->
+        <input type="text" id="organizer" size="20" maxlength="50" placeholder="example@web.com" pattern =
+                "[a-zA-Z0-9._&'+*-]+@[a-zA-z0-9._&'+*-]+\.[a-zA-z0-9._&'+*-]+" required>
         <br>
 
         <label for="all_day">All day</label>
-        <input type="checkbox" id="all_day" onclick="validate_all_day()">
+        <input type="checkbox" id="all_day" onchange="validate_all_day()">
 
         <label for="setAlarm" id="labelSetAlarm"> Set Alarm</label>
         <input type="checkbox" id="setAlarm">
@@ -70,7 +71,8 @@
         <br>
 
         <label for="webpage">Web page</label>
-        <input type="text" id="webpage" placeholder="www.example.com" pattern="^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$">
+        <input type="text" id="webpage" placeholder="www.example.com" pattern=
+                "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})">
         <br>
 
         <label for="image_upload">Picture</label>

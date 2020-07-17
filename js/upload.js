@@ -1,5 +1,6 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
-var user = "test";
+var user = "7035821";
+
 var image_URL = null;
 var imageLink = null;
 var windowLoads = sessionStorage.getItem("windowLoads"); // save in session storage
@@ -13,7 +14,9 @@ var entry_form_value_ids = [
     "status",
     "all_day",
     "webpage",
-    "image_upload"];
+    "image_upload",
+    "categories"];
+
 var category_form_value_ids = ["category_name"];
 var form = document.getElementById("edit_form");
 function handleForm(event) { event.preventDefault(); }
@@ -85,6 +88,7 @@ function uploadEvent() {
             if (userselection === true) {
                 // Simulate an HTTP redirect:
                 window.location.replace("edit_entry.html");
+                resetWindowLoads("reset");
             } else {
                 resetWindowLoads("reset");
                 window.location.replace("index.html");
@@ -94,6 +98,7 @@ function uploadEvent() {
         }
         // Validate information was received
     }
+
     xmlhttp.open("POST", url+user+"/events", true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(get_entry_form_input());
@@ -111,13 +116,13 @@ function uploadEvent() {
     }
 }
 
-
 function get_entry_form_input() {
     // Get field values
     var form_values = [];
     entry_form_value_ids.forEach(function(item_id){
         form_values.push(document.getElementById(item_id).value);
     });
+    var categories;
 
 
     // Convert input into string with json format
@@ -131,7 +136,7 @@ function get_entry_form_input() {
         allday: document.getElementById("all_day").checked,
         webpage: form_values[9],
         imagedata: image_URL,
-        categories: null,
+        categories: document.getElementById("all_day"),
         extra: document.getElementById("setAlarm").checked
         //extra: document.getElementById("setAlarm").checked
         });
@@ -139,7 +144,6 @@ function get_entry_form_input() {
     console.log(message);
     return message;
     }
-
 
 function convert_image_to_DataURL(){
 
@@ -165,7 +169,7 @@ function convert_image_to_DataURL(){
 function validate_all_day() {
     var startTime = document.getElementById("start_time");
     var endTime = document.getElementById("end_time");
-    if(document.getElementById("all_day").checked === false){
+    if(document.getElementById("all_day").checked === true){
         startTime.value = "00:00";
         endTime.value = "23:59";
         startTime.disabled = true;
@@ -285,6 +289,9 @@ function preFillEntry(queryString) {
         document.getElementById("end_time").value = entryJSON.end_time;
         document.getElementById("webpage").value = entryJSON.webpage;
         document.getElementById("organizer").value = entryJSON.organizer;
+
+
+
         ///???
         if(entryJSON.imageurl){
             imageLink = entryJSON.imageurl;
@@ -300,11 +307,17 @@ function linkImage() {
 function loadCategoryOptions(){
        var categoryOptions = sessionStorage.getItem("categories");
        categoryOptions = categoryOptions.split(",");
-       console.log(typeof (categoryOptions));
+
+       // Category option "None"
+       document.getElementById("category").innerHTML =
+           document.getElementById("category").innerHTML +
+           "<option value=\"None\">None</option>";
+
+       // Load Categories
        categoryOptions.forEach(function(category){
-            document.getElementById("category").innerHTML =
-                document.getElementById("category").innerHTML +
-                "<option value=\"Hollyday\">"+category+"</option>"
+           document.getElementById("category").innerHTML=
+               document.getElementById("category").innerHTML +
+               "<option value="+category+">"+category+"</option>";
        });
 }
 
