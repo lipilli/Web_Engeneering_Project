@@ -38,7 +38,6 @@ function loadData(data) {
     };
     xhttp.open("GET", url+user+"/"+data, true);
     xhttp.send();
-    //setAlarms(alarmTimes);
 }
 
 function loadEventTable(json) {
@@ -147,12 +146,13 @@ function editData(data, id) {
     xmlhttp.onreadystatechange = function() {
         if(this.status ===200 && this.readyState===4){
             var responseJSON = JSON.parse(this.responseText);
+            var eventInStorageFormat
             if (data==="events") {
-                var eventInStorageFormat = transformResponseEvent(responseJSON);
+                eventInStorageFormat = transformResponseEvent(responseJSON);
                 sessionStorage.setItem(id,eventInStorageFormat);
                 window.location.replace("edit_entry.html?"+id);
             } else if (data==="categories") {
-                var eventInStorageFormat = transformResponseCategory(responseJSON);
+                eventInStorageFormat = transformResponseCategory(responseJSON);
                 sessionStorage.setItem(id,eventInStorageFormat);
                 window.location.replace("edit_category.html?"+id);
             }
@@ -165,10 +165,8 @@ function loadCategoryTable(json) {
     var parsedCategories = JSON.parse(json.responseText);
     sessionStorage.setItem("category_count",parsedCategories.length);
 
-    var storedCategories = [];
     var categories = "<tr>";
     for (var i=0; i<parsedCategories.length; i++) {
-        storedCategories.push(parsedCategories[i].name);
         categories = categories + "<th>" + parsedCategories[i].name + "</th>";
     }
     categories = categories + "</tr>";
@@ -183,8 +181,6 @@ function loadCategoryTable(json) {
     }
     categories = categories + "</tr>";
     document.getElementById("category_table").innerHTML = categories;
-
-    sessionStorage.setItem("categories", storedCategories);
 }
 
 function checkAmountOfCategories() {
@@ -226,7 +222,7 @@ function transformResponseEvent(json) {
     }else{
         location = "";
     }
-    if (parsed_event.categories.length == 0){
+    if (parsed_event.categories.length === 0){
         categories = [{id: 0, name: "none"}];
     }else{
         categories = parsed_event.categories;
