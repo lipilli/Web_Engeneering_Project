@@ -23,10 +23,10 @@
     </p>
 </header>
 
-<h3 id="calendar_entry_mode">Add Calender Entry</h3>
+<h3 id="header3">Add Calender Entry</h3>
 
-<div id="entryFormDiv">
-    <form id="event_edit_form" onsubmit="uploadEvent()">
+<div id="FormDiv">
+    <form id="edit_form" onsubmit="uploadEvent()">
 
         <label for="event_name" >Title</label>
         <input type="text" id="event_name" size="20" maxlength="50" required >
@@ -81,17 +81,10 @@
         <canvas id ="canvas"  width="100%">
         </canvas>
 
-        <button type="submit">Eintrag speichern</button>
+        <button type="submit">Safe entry</button>
     </form>
 </div>
 
-<div id="table_test">
-    <table align="center" id="event_table" style="width: 900px"></table>
-</div>
-
-<br>
-
-<div id="testbutton"></div>
 <script src="../js/upload.js"></script>
 </body>
 </html>

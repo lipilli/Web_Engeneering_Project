@@ -19,6 +19,7 @@ window.addEventListener( "pageshow", function ( event ) {
         window.location.reload();
     }
 });
+
 function loadData(data) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -42,15 +43,13 @@ function loadEventTable(json) {
     var response = JSON.parse(json.responseText);
     var parsedEvent;
 
-
     var events;
     var datetime;
     var page;
     var img;
     var category;
-
     for (var i=0; i<response.length; i++) {
-        parsedEvent = JSON.parse(transformResponse(response[i]));
+        parsedEvent = JSON.parse(transformResponseEvent(response[i]));
         startdate = parsedEvent.start_date;
         starttime = parsedEvent.start_time;
         enddate = parsedEvent.end_date;
@@ -96,16 +95,14 @@ function loadEventTable(json) {
                 "<td>" + "<a href=\""+parsedEvent.webpage+"\">"+page+"</a>" + "</td>" +
                 "<td width=\"50\">" + img + "</td>" +
                 "<td width=\"75\">" + category + "</td>" +
-                "<td>" + "<button onclick=\"editEvent("+parsedEvent.id+")\" style=\"width: 100%\"\">Edit</button>"+"<br>"+"<button onclick=\"deleteEvent("+parsedEvent.id+")\" style=\"width: 100%\">Delete</button>" + "</td>" +
+                "<td>" + "<button onclick=\"editData(\'events\',"+parsedEvent.id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'events\',"+parsedEvent.id+")\" style=\"width: 100%\">Delete</button>" + "</td>" +
             "</tr>";
 
         // Add starts for the alarms
         alarmTimes.push([parsedEvent.extra,startdate, starttime, parsedEvent.title]);
     }
-
     document.getElementById("event_table").innerHTML = addEventTableHeader() + events;
     setAlarms(alarmTimes);
-
 }
 
 function addEventTableHeader() {
@@ -125,64 +122,77 @@ function addEventTableHeader() {
     return tableHead
 }
 
-function deleteEvent(id) {
-    var userselection = confirm("Are you sure you want to delete this event?");
+function confirmDeletion(data, id) {
+    console.log(data,id);
+    var userselection = confirm("Are you sure you want to delete this entry?");
     if (userselection === true) {
-        deleteData("events",id); //
-        alert("Event deleted!");
-        loadData("events");
+        deleteData(data,id);
+        alert("Entry deleted!");
+        loadData(data);
     }
 }
-
 
 function deleteData(data, id) {
-    switch(data) {
-        case("events"):
-            document.getElementById("testbutton").innerHTML += "Button Delete wurde gedrückt! <br>";
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
-            xmlhttp.send();
-            break;
-    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
+    xmlhttp.send();
 }
 
-function editEvent(id) {
+function editData(data, id) {
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", url+user+"/events/"+id, true);
+    xmlhttp.open("GET", url+user+"/"+data+"/"+id, true);
     xmlhttp.onreadystatechange = function() {
         if(this.status ===200 && this.readyState===4){
             var responseJSON = JSON.parse(this.responseText);
-            var eventInStorageFormat = transformResponse(responseJSON);
-            sessionStorage.setItem(id,eventInStorageFormat);
-            window.location.replace("edit_entry.html?"+id);
+            if (data==="events") {
+                var eventInStorageFormat = transformResponseEvent(responseJSON);
+                sessionStorage.setItem(id,eventInStorageFormat);
+                window.location.replace("edit_entry.html?"+id);
+            } else if (data==="categories") {
+                var eventInStorageFormat = transformResponseCategory(responseJSON);
+                sessionStorage.setItem(id,eventInStorageFormat);
+                window.location.replace("edit_category.html?"+id);
+            }
         }
     };
     xmlhttp.send();
 }
 
-
-
 function loadCategoryTable(json) {
-    var parsed_categories = JSON.parse(json.responseText);
-    var storeCtegories = [];
+    var parsedCategories = JSON.parse(json.responseText);
+    sessionStorage.setItem("category_count",parsedCategories.length);
+
+    var storedCategories = [];
     var categories = "<tr>";
-    for (var i=0; i<parsed_categories.length; i++) {
-        storeCtegories.push(parsed_categories[i].name)
-        categories = categories + "<th>" + parsed_categories[i].name + "</th>";
+    for (var i=0; i<parsedCategories.length; i++) {
+        storedCategories.push(parsedCategories[i].name);
+        categories = categories + "<th>" + parsedCategories[i].name + "</th>";
     }
     categories = categories + "</tr>";
     categories = categories + "<tr>";
-
-    for ( i=0; i<parsed_categories.length; i++) {
-        categories = categories + "<td>" + parsed_categories[i].id + "</td>";
+    for ( i=0; i<parsedCategories.length; i++) {
+        categories = categories + "<td>" + parsedCategories[i].id + "</td>";
+    }
+    categories = categories + "</tr>";
+    categories = categories + "<tr>";
+    for ( i=0; i<parsedCategories.length; i++) {
+        categories = categories + "<td>" + "<button onclick=\"editData(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td>";
     }
     categories = categories + "</tr>";
     document.getElementById("category_table").innerHTML = categories;
 
-    sessionStorage.setItem("categories", storeCtegories);
+    sessionStorage.setItem("categories", storedCategories);
 }
 
-function transformResponse(json) {
+function checkAmountOfCategories() {
+    if (sessionStorage.category_count >= 10) {
+        alert("You cannot have more than 10 categories. Please delete some first to add more!");
+    } else {
+        window.location.replace("edit_category.html");
+    }
+}
+
+function transformResponseEvent(json) {
 
     var parsed_event = json;
     var webpage;
@@ -231,6 +241,16 @@ function transformResponse(json) {
     });
     return transformed;
 }
+
+function transformResponseCategory(json) {
+    var parsed_category = json;
+    var transformed = JSON.stringify({
+        id: parsed_category.id,
+        name: parsed_category.name
+    });
+    return transformed;
+}
+
 function setAlarms(alarmInfos){
 
     var AlarmTimes = [];
