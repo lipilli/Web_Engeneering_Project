@@ -9,7 +9,25 @@
     <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
   </head>
   <body>
-    <script src=""></script>
+    <script>
+      // Prevent user from going forward and backwards
+      window.history.forward(1)
+      /*
+      // Go forward in the browser history
+      window.addEventListener( "pageshow", function ( event ) {
+        window.history.forward(1)
+        var historyTraversal = event.persisted // page was loaded from cache
+                // Page was accessed through history traversal
+                ( typeof window.performance != "undefined" &&
+                        window.performance.navigation.type === 2 );
+        if ( historyTraversal ) {
+          // Handle page restore.
+          window.location.reload();
+        }
+      });
+
+      */
+    </script>
     <header>
       <h1>Dynamic Calendar</h1>
       <br>
@@ -32,7 +50,8 @@
 
       <h3>Description</h3>
       <p>
-        This whole page is a dynamic web application project in part of the Web-Engineering 1 course of our university.
+        Thy Dynamic Calendar is a web application is a project which was part of Web-Engineering 1 course of our university.
+        It has all the basic and enhanced features listed below.
         <br>
         <a href="https://www.dhbw-stuttgart.de/zielgruppen/international-visitors/dhbw-stuttgart/profile/" target="_blank">DHBW Stuttgart</a>
       </p>
@@ -43,34 +62,22 @@
         <li>Show calendar entries</li>
         <li>Create calendar entry</li>
         <li>Edit calendar entries</li>
-        <li>Delete calendar entriies</li>
+        <li>Delete calendar entries</li>
         <li>Image for calendar entry</li>
       </ul>
 
 
       <h3>Enhanced Features</h3>
-        <li>Allerts with sound (sound needs to be enabled by the user) </li>
-        <li>Back button handling</li>
-        <li>Reload button handling</li>
-        <li>Show categories on server</li>
-        <li>Categories in entry form are pulled from the server</li>
+      <ul>
+        <li>Alerts with sound (sound needs to be enabled by the user) </li>
+        <li>Back button handling on all pages</li>
+        <li>Show categories from server</li>
+        <li>Extra pages for editing and adding entries and categories</li>
+        <li>Image preview on the edit/add entry page</li>
+        <li>Refresh button handling on the edit/add entry page</li>
         <li>About page</li>
-        <li>Contact Form</li>
-        <li>Image preview when editing or adding an entry</li>
-        <li>Extra page for editing or adding an entry</li>
+        <li>Contact page with contact form</li>
+      </ul>
     </div>
-    <script>
-      // Prevent user from going forward and backwards
-      window.addEventListener( "pageshow", function ( event ) {
-        window.history.forward(1)
-        var historyTraversal = event.persisted ||
-                ( typeof window.performance != "undefined" &&
-                        window.performance.navigation.type === 2 );
-        if ( historyTraversal ) {
-          // Handle page restore.
-          window.location.reload();
-        }
-      });
-    </script>
   </body>
 </html>

@@ -14,7 +14,7 @@
       <h1>Dynamic Calendar</h1>
       <br>
       <p>
-        <a href="index.html">Home</a> /
+        <a href="index.html" onclick="{resetWindowLoads('reset')}">Home</a> /
         <a href="about.html">About</a> /
         <a href="contact.html">Contact</a> /
         <a href="https://github.com/lipilli/Web_Engeneering_Project" target="_blank">GitHub</a>
@@ -36,36 +36,53 @@
         <br>
 
         <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" placeholder="Please enter your first name." required ="required" autofocus>
+        <input type="text" id="firstName" placeholder="Please enter your first name." size="20" maxlength="50"  required ="required" autofocus>
 
         <br>
 
 
         <label for="lastName">Name:</label>
-        <input type="text" id="lastName" placeholder="Please enter your last name." required ="required">
+        <input type="text" id="lastName" placeholder="Please enter your last name." size="20" maxlength="50"  required ="required">
 
         <br>
 
         <label for="message">Message</label>
         <br>
-        <textarea id="message" rows="8" cols="80" placeholder="Say Hello :)"></textarea>
+        <textarea id="message" rows="8" cols="80" maxlength="1000" placeholder="Say Hello :)"></textarea>
         <br>
 
         <button type="submit">Send</button>
       </form>
     </div>
-    <script >
+    <script>
       // Prevent user from going forward and backwards
-      window.addEventListener( "pageshow", function ( event ) {
-        window.history.forward(1)
-        var historyTraversal = event.persisted ||
-                ( typeof window.performance != "undefined" &&
-                        window.performance.navigation.type === 2 );
-        if ( historyTraversal ) {
-          // Handle page restore.
-          window.location.reload();
+
+      var windowLoads = sessionStorage.getItem("windowLoads"); // save in session storage
+      window.onload = function resetWindowLoads(option) {
+        window.history.forward(1);
+
+        //Reset number of window loads, for the case of leaving the page.
+        if(option === "reset"){
+          sessionStorage.setItem("windowLoads","0");
+          //Create entry if windowloads do not exist
+        }else if(windowLoads == null){
+          sessionStorage.setItem("windowLoads","0");
+        }else if(parseInt(windowLoads)===0){
+          windowLoads = 1;
+          sessionStorage.setItem("windowLoads", "1");
+          //Reset page to its initial state.
+        }else if(parseInt(windowLoads)>0){
+
+          //document.getElementById("category").value = ;
+          var userselection = confirm("Are you sure u want to reload?\n All your data will be lost.");
+
+          if(userselection === true){
+            document.getElementById("contactForm").reset();
+            //document.getElementById("category").value = sessionStorage.getItem("selectedCategory");
+          }
         }
-      });
+      }
+
     </script>
   </body>
 </html>

@@ -19,7 +19,7 @@
       <p>
         <a href="index.html" >Home</a> /
         <a href="about.html">About</a> /
-        <a href="contact.html">Contact</a> /
+        <a href="contact.html" onclick="{resetWindowLoads('reset')}">Contact</a> /
         <a href="https://github.com/lipilli/Web_Engeneering_Project" target="_blank">GitHub</a>
       </p>
 
@@ -33,19 +33,21 @@
 
     </header>
 
-    <h1>Events</h1>
+    <!--Categories-->
+    <h1>Categories</h1>
+    <div class="table-scroll">
+      <table align="center" id="category_table" style="width: 950px"></table>
+    </div>
 
     <!--Calendar-->
+    <h1>Events</h1>
     <div class="table-scroll">
       <table align="center" id="event_table" style="width: 950px"></table>
     </div>
 
     <br>
 
-    <h1>Categories</h1>
-    <div class="table-scroll">
-      <table align="center" id="category_table" style="width: 950px"></table>
-    </div>
+
 
   </body>
 </html>

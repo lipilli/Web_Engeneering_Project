@@ -6,21 +6,41 @@ var alarmTimes = [];
 var alarmSound = new Audio("../Resources/alarm.mp3")
 
 window.onload = function() {
+    window.history.forward(1);
     loadData("categories");
     loadData("events");
 };
 
 // Prevent user from going forward and backwards
-window.addEventListener( "pageshow", function ( event ) {
-    window.history.forward(1)
-    var historyTraversal = event.persisted ||
-        ( typeof window.performance != "undefined" &&
-            window.performance.navigation.type === 2 );
-    if ( historyTraversal ) {
-        // Handle page restore.
-        window.location.reload();
-    }
-});
+// window.addEventListener( "pageshow", function ( event ) {
+//     loadData("categories");
+//     loadData("events");
+//     var historyTraversal = event.persisted ||
+//         ( typeof window.performance != "undefined" &&
+//             window.performance.navigation.type === 2 );
+//     if ( historyTraversal ) {
+//         // Handle page restore.
+//         console.log("hello")
+//         window.location.reload();
+//     }
+// });
+
+function addEventTableHeader() {
+    var tableHead =
+        "<tr>" +
+        "<th>Title</th>" +
+        "<th>Status</th>" +
+        "<th>Location</th>" +
+        "<th>Organizer</th>" +
+        "<th>Date and Time</th>" +
+        "<th>Webpage</th>" +
+        "<th>Image</th>" +
+        "<th>Category</th>" +
+        "<th>Actions</th>" +
+        "</tr>";
+
+    return tableHead
+}
 
 function loadData(data) {
     var xhttp = new XMLHttpRequest();
@@ -42,7 +62,6 @@ function loadData(data) {
 
 function loadEventTable(json) {
     var response = JSON.parse(json.responseText);
-    console.log(response);
     var parsedEvent;
 
     var events;
@@ -107,22 +126,23 @@ function loadEventTable(json) {
     setAlarms(alarmTimes);
 }
 
-function addEventTableHeader() {
-     var tableHead =
-         "<tr>" +
-             "<th>Title</th>" +
-            "<th>Status</th>" +
-            "<th>Location</th>" +
-            "<th>Organizer</th>" +
-            "<th>Date and Time</th>" +
-            "<th>Webpage</th>" +
-            "<th>Image</th>" +
-            "<th>Category</th>" +
-            "<th>Actions</th>" +
-         "</tr>";
+function loadCategoryTable(json) {
+    var parsedCategories = JSON.parse(json.responseText);
+    sessionStorage.setItem("category_count",parsedCategories.length);
 
-    return tableHead
+    var categories = "<tr>";
+    for (var i=0; i<parsedCategories.length; i++) {
+        categories = categories + "<th>" + parsedCategories[i].name + "</th>";
+    }
+    categories = categories + "</tr>";
+    categories = categories + "<tr>";
+    for ( i=0; i<parsedCategories.length; i++) {
+        categories = categories + "<td>" + "<button onclick=\"editData(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td>";
+    }
+    categories = categories + "</tr>";
+    document.getElementById("category_table").innerHTML = categories;
 }
+
 
 function confirmDeletion(data, id) {
     console.log(data,id);
@@ -159,23 +179,6 @@ function editData(data, id) {
         }
     };
     xmlhttp.send();
-}
-
-function loadCategoryTable(json) {
-    var parsedCategories = JSON.parse(json.responseText);
-    sessionStorage.setItem("category_count",parsedCategories.length);
-
-    var categories = "<tr>";
-    for (var i=0; i<parsedCategories.length; i++) {
-        categories = categories + "<th>" + parsedCategories[i].name + "</th>";
-    }
-    categories = categories + "</tr>";
-    categories = categories + "<tr>";
-    for ( i=0; i<parsedCategories.length; i++) {
-        categories = categories + "<td>" + "<button onclick=\"editData(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td>";
-    }
-    categories = categories + "</tr>";
-    document.getElementById("category_table").innerHTML = categories;
 }
 
 function checkAmountOfCategories() {
@@ -312,4 +315,12 @@ function getAlarmTime(info) {
 function setOffAlarm(eventName){
     alarmSound.play();
     alert("Your event: "+eventName+" is happening now!");
+}
+
+
+ function resetWindowLoads(option) {
+    //Reset number of window loads, for the case of leaving the page.
+    if(option === "reset"){
+        sessionStorage.setItem("windowLoads","0");
+    }
 }
