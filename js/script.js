@@ -172,11 +172,6 @@ function loadCategoryTable(json) {
     categories = categories + "</tr>";
     categories = categories + "<tr>";
     for ( i=0; i<parsedCategories.length; i++) {
-        categories = categories + "<td>" + parsedCategories[i].id + "</td>";
-    }
-    categories = categories + "</tr>";
-    categories = categories + "<tr>";
-    for ( i=0; i<parsedCategories.length; i++) {
         categories = categories + "<td>" + "<button onclick=\"editData(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td>";
     }
     categories = categories + "</tr>";
