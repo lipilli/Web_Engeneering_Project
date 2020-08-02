@@ -13,18 +13,14 @@
     line-height: 50px;
 }
 
-#entryFormDiv, #contactFormDiv{
+#FormDiv{
+    display: table;
+    margin: 0 auto;
     width: 50%;
     background-color: #F6F8FA;
-    margin-left: 25%;
-    margin-right: 25%;
     padding: 20px;
     border-radius: 10px;
     line-height: 50px;
-}
-
-#calendar_entry_mode, #contactFormHead{
-    margin-left: 25%;
 }
 
 #labelSetAlarm {
