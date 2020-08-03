@@ -114,8 +114,7 @@ function importCategoryOptions(json) {
             "<option value="+category.id+">"+category.name+"</option>";
     });
 
-    // if user selection
-    //document.getElementById("category").autofocus =
+
 }
 
 function preFillEntry(queryString) {
@@ -142,17 +141,23 @@ function preFillEntry(queryString) {
 
         if(entryJSON.imageurl){
             imageLink = entryJSON.imageurl;
+            showImageOnCanvas(imageLink);
         }
+
+
     }
 }
 
-function convertImageToDataURL(){
+function showImageOnCanvas(link){
 
     var image = document.getElementById("image_upload");
     var background = new Image();
-    background.src = URL.createObjectURL(image.files[0]);
+    if(link===''){
+        background.src = URL.createObjectURL(image.files[0]);
+    }else {
+        background.src = link;
+    }
 
-    //Background.onload = onload_of_image(background);
     background.onload = function (){
         var canvas = document.getElementById("canvas");
         var context = canvas.getContext("2d");
@@ -162,9 +167,14 @@ function convertImageToDataURL(){
         context.width = background.width;
         context.height = background.height;
         context.drawImage(background, 0, 0);
-        image_URL = canvas.toDataURL('image/jpeg');
+        if(!(link==="")){
+            convertImageToDataURL(canvas);
+        }
     }
+}
 
+function convertImageToDataURL(canvas){
+        image_URL = canvas.toDataURL('image/jpeg');
 }
 
 
