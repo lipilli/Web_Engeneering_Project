@@ -143,8 +143,6 @@ function preFillEntry(queryString) {
             imageLink = entryJSON.imageurl;
             showImageOnCanvas(imageLink);
         }
-
-
     }
 }
 
@@ -237,8 +235,7 @@ function getInputFromEntryForm() {
         extra: document.getElementById("setAlarm").checked
         //extra: document.getElementById("setAlarm").checked
     });
-    console.log("document.getElementById(\"setAlarm\").checked");
-    console.log(message);
+
     return message;
 }
 
@@ -354,9 +351,13 @@ function uploadEvent() {
         }
         // Validate information was received
     }
-
-    xmlhttp.open("POST", url+user+"/events", true);
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    //TODO: event is not found somehow
+    if(queryString){
+        xmlhttp.open("PUT", url+user+"/events/"+queryString.toString(), true);
+    }else{
+        xmlhttp.open("POST", url+user+"/events", true);
+    }
+    xmlhttp.setRequestHeader("Content-Type", "text/plain");
     xmlhttp.send(getInputFromEntryForm());
     var summissionCount = sessionStorage.getItem("submissionFailCount");
 
@@ -411,12 +412,17 @@ function uploadCategory() {
         } else if(this.status === 400){
             console.log("sth. went wrong ");
         } else if(this.status === 500) {
-            alert("This category allready exists. Try another name!");
+            alert("This category already exists. Try another name!");
             window.location.replace("edit_category.html");
         }
         // Validate information was received
     }
-    xmlhttp.open("POST", url+user+"/categories", true);
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
+
+    if(queryString){
+        xmlhttp.open("PUT", url+user+"/categories/"+queryString.toString(), true);
+    }else{
+        xmlhttp.open("POST", url+user+"/categories", true);
+    }
+    xmlhttp.setRequestHeader("Content-Type", "text/plain"); //TODO
     xmlhttp.send(getCategoryFormInput());
 }
