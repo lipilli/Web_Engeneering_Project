@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <title>Dynamic Calendar</title>
     <link rel="stylesheet" href="../CSS/new.css">
-    <link rel="stylesheet" href="../CSS/our_style.css">
+    <link rel="stylesheet" href="../CSS/ourStyle.css">
     <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
 
 </head>
@@ -23,7 +23,7 @@
     </p>
 </header>
 
-<h3 id="header3">Add Calender Entry</h3>
+<h3 id="addCalendarEntryPageHeader">Add Calender Entry</h3>
 <br>
 <div id="FormDiv">
     <form id="edit_form" onsubmit="uploadEvent()">
@@ -49,8 +49,7 @@
         <br>
 
         <label for="organizer">Organisator</label>
-        <input type="text" id="organizer" size="20" maxlength="50" placeholder="example@web.com" pattern =
-                "[a-zA-Z0-9._&'+*-]+@[a-zA-z0-9._&'+*-]+\.[a-zA-z0-9._&'+*-]+" required>
+        <input type="email" id="organizer" size="20" maxlength="50" placeholder="example@web.com" required>
         <br>
 
         <label for="all_day">All day</label>

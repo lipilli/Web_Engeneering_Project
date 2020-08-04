@@ -1,6 +1,5 @@
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "7035821";
-// var user = "9537809-7035821";
 
 var alarmTimes = [];
 var alarmSound = new Audio("../Resources/alarm.mp3")
@@ -11,19 +10,7 @@ window.onload = function() {
     loadData("events");
 };
 
-// Prevent user from going forward and backwards
-// window.addEventListener( "pageshow", function ( event ) {
-//     loadData("categories");
-//     loadData("events");
-//     var historyTraversal = event.persisted ||
-//         ( typeof window.performance != "undefined" &&
-//             window.performance.navigation.type === 2 );
-//     if ( historyTraversal ) {
-//         // Handle page restore.
-//         console.log("hello")
-//         window.location.reload();
-//     }
-// });
+
 
 function addEventTableHeader() {
     var tableHead =
@@ -69,36 +56,40 @@ function loadEventTable(json) {
     var page;
     var img;
     var category;
-    for (var i=0; i<response.length; i++) {
+    let startDate;
+    let startTime;
+    let endDate;
+    let endTime;
+    for (var i = 0; i < response.length; i++) {
         parsedEvent = JSON.parse(transformResponseEvent(response[i]));
-        startdate = parsedEvent.start_date;
-        starttime = parsedEvent.start_time;
-        enddate = parsedEvent.end_date;
-        endtime = parsedEvent.end_time;
-        if (startdate === enddate) {
+        startDate = parsedEvent.start_date;
+        startTime = parsedEvent.start_time;
+        endDate = parsedEvent.end_date;
+        endTime = parsedEvent.end_time;
+        if (startDate === endDate) {
 
             if (parsedEvent.allday === true) {
-                datetime = startdate + "<br>" + "All day";
+                datetime = startDate + "<br>" + "All day";
             } else {
-                datetime = startdate + "<br>" + starttime + "-" + endtime;
+                datetime = startDate + "<br>" + startTime + "-" + endTime;
             }
         } else {
             if (parsedEvent.allday === true) {
-                datetime = startdate + "<br>-<br>" + enddate;
+                datetime = startDate + "<br>-<br>" + endDate;
             } else {
-                datetime = startdate + " " + starttime + "<br>-<br>" + enddate + " " + endtime;
+                datetime = startDate + " " + startTime + "<br>-<br>" + endDate + " " + endTime;
             }
         }
-        if (parsedEvent.webpage){
+        if (parsedEvent.webpage) {
 
             page = parsedEvent.webpage;
-        }else{
+        } else {
             page = "No page";
         }
-        if(parsedEvent.imageurl === null) {
+        if (parsedEvent.imageurl === null) {
             img = "No image";
         } else {
-            img = "<img src=\"" + parsedEvent.imageurl + "\" width=\"50\"\>";
+            img = "<img alt='Image upload' src=\"" + parsedEvent.imageurl + "\" width=\"50\"\>";
         }
         if (parsedEvent.categories.length === 0) {
 
@@ -108,19 +99,19 @@ function loadEventTable(json) {
         }
         events = events +
             "<tr>" +
-                "<td>" + parsedEvent.title + "</td>" +
-                "<td width=\"75\">" + parsedEvent.status + "</td>" +
-                "<td width=\"100\">" + parsedEvent.location + "</td><td>" +
-                "<a href=\"mailto:"+parsedEvent.organizer+"\">"+parsedEvent.organizer+"</a>" + "</td>" +
-                "<td width=\"125\">" + datetime + "</td>" +
-                "<td>" + "<a href=\""+parsedEvent.webpage+"\">"+page+"</a>" + "</td>" +
-                "<td width=\"50\">" + img + "</td>" +
-                "<td width=\"75\">" + category + "</td>" +
-                "<td>" + "<button onclick=\"editData(\'events\',"+parsedEvent.id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'events\',"+parsedEvent.id+")\" style=\"width: 100%\">Delete</button>" + "</td>" +
+            "<td>" + parsedEvent.title + "</td>" +
+            "<td width=\"75\">" + parsedEvent.status + "</td>" +
+            "<td width=\"100\">" + parsedEvent.location + "</td><td>" +
+            "<a href=\"mailto:" + parsedEvent.organizer + "\">" + parsedEvent.organizer + "</a>" + "</td>" +
+            "<td width=\"125\">" + datetime + "</td>" +
+            "<td>" + "<a href=\"" + parsedEvent.webpage + "\">" + page + "</a>" + "</td>" +
+            "<td width=\"50\">" + img + "</td>" +
+            "<td width=\"75\">" + category + "</td>" +
+            "<td>" + "<button onclick=\"editData(\'events\'," + parsedEvent.id + ")\" style=\"width: 100%\">Edit</button>" + "<br>" + "<button onclick=\"confirmDeletion(\'events\'," + parsedEvent.id + ")\" style=\"width: 100%\">Delete</button>" + "</td>" +
             "</tr>";
 
         // Add starts for the alarms
-        alarmTimes.push([parsedEvent.extra,startdate, starttime, parsedEvent.title]);
+        alarmTimes.push([parsedEvent.extra, startDate, startTime, parsedEvent.title]);
     }
     document.getElementById("event_table").innerHTML = addEventTableHeader() + events;
     setAlarms(alarmTimes);
@@ -170,11 +161,11 @@ function editData(data, id) {
             if (data==="events") {
                 eventInStorageFormat = transformResponseEvent(responseJSON);
                 sessionStorage.setItem(id,eventInStorageFormat);
-                window.location.replace("edit_entry.html?"+id);
+                window.location.replace("editEntry.html?"+id);
             } else if (data==="categories") {
                 eventInStorageFormat = transformResponseCategory(responseJSON);
                 sessionStorage.setItem(id,eventInStorageFormat);
-                window.location.replace("edit_category.html?"+id);
+                window.location.replace("editCategory.html?"+id);
             }
         }
     };
@@ -185,71 +176,71 @@ function checkAmountOfCategories() {
     if (sessionStorage.category_count > 10) {
         alert("You cannot have more than 10 categories. Please delete some first to add more!");
     } else {
-        window.location.replace("edit_category.html");
+        window.location.replace("editCategory.html");
     }
 }
 
 function transformResponseEvent(json) {
 
-    var parsed_event = json;
-    var webpage;
+    var parsedEvent = json;
+    var webPage;
     var location;
-    var start_time;
-    var end_time;
-    var start_date;
-    var end_date;
+    var startTime;
+    var endTime;
+    var startDate;
+    var endDate;
     var categories;
 
-    start_date = parsed_event.start.split("T", 1)[0];
-    end_date = parsed_event.end.split("T", 1)[0];
+    startDate = parsedEvent.start.split("T", 1)[0];
+    endDate = parsedEvent.end.split("T", 1)[0];
 
-    if (parsed_event.allday === true) {
-        start_time = "00:00";
-        end_time = "23:59";
+    if (parsedEvent.allday === true) {
+        startTime = "00:00";
+        endTime = "23:59";
     } else {
-        start_time = parsed_event.start.split("T", 2)[1];
-        end_time= parsed_event.end.split("T", 2)[1];
+        startTime = parsedEvent.start.split("T", 2)[1];
+        endTime= parsedEvent.end.split("T", 2)[1];
     }
-    if (parsed_event.webpage){
-        webpage = parsed_event.webpage;
+    if (parsedEvent.webpage){
+        webPage = parsedEvent.webpage;
     }else{
-        webpage = "";
+        webPage = "";
     }
-    if (parsed_event.location){
-        location = parsed_event.location
+    if (parsedEvent.location){
+        location = parsedEvent.location
     }else{
         location = "";
     }
-    if (parsed_event.categories.length === 0){
+    if (parsedEvent.categories.length === 0){
         categories = [{id: 0, name: "none"}];
     }else{
-        categories = parsed_event.categories;
+        categories = parsedEvent.categories;
     }
 
     var transformed = JSON.stringify({
-        id: parsed_event.id,
-        title: parsed_event.title,
+        id: parsedEvent.id,
+        title: parsedEvent.title,
         location: location,
-        organizer: parsed_event.organizer,
-        start_date:start_date,
-        start_time: start_time,
-        end_date:end_date,
-        end_time:end_time,
-        status: parsed_event.status,
-        allday: parsed_event.allday,
-        webpage: webpage,
-        imageurl: parsed_event.imageurl,
+        organizer: parsedEvent.organizer,
+        start_date:startDate,
+        start_time: startTime,
+        end_date:endDate,
+        end_time:endTime,
+        status: parsedEvent.status,
+        allday: parsedEvent.allday,
+        webpage: webPage,
+        imageurl: parsedEvent.imageurl,
         categories: categories,
-        extra: parsed_event.extra
+        extra: parsedEvent.extra
     });
     return transformed;
 }
 
 function transformResponseCategory(json) {
-    var parsed_category = json;
+    var parsedCategory = json;
     var transformed = JSON.stringify({
-        id: parsed_category.id,
-        name: parsed_category.name
+        id: parsedCategory.id,
+        name: parsedCategory.name
     });
     return transformed;
 }
@@ -258,7 +249,7 @@ function setAlarms(alarmInfos){
 
     var AlarmTimes = [];
     var alarmTime;
-    var timeDiffernce;
+    var timeDifference;
 
 
     for(var i=0; i<alarmInfos.length;i++){
@@ -268,11 +259,11 @@ function setAlarms(alarmInfos){
             // check if alarm is in the past
             alarmTime = getAlarmTime(alarmInfos[i]);
             console.log(alarmInfos[i])
-            timeDiffernce = alarmTime.getTime() - (new Date()).getTime();
+            timeDifference = alarmTime.getTime() - (new Date()).getTime();
 
-            if(timeDiffernce > 0) {
+            if(timeDifference > 0) {
                 // Append Time until counter goes of and event name
-                AlarmTimes.push([timeDiffernce, alarmInfos[i][3]]);
+                AlarmTimes.push([timeDifference, alarmInfos[i][3]]);
             }
         }
     }
