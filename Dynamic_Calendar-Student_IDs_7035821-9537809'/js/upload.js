@@ -235,12 +235,13 @@ function setMinTimes(startDate, endDate) {
             hour = now.getHours();
         }
         if(now.getMinutes()<10){
-            min = now.getMinutes();
+            min = '0'+now.getMinutes();
         }else{
             min = now.getMinutes();
         }
         // For some reason hours and minutes are switched...
         var currentTimeString = hour+":"+min;
+        console.log(currentTimeString);
         document.getElementById("start_time").min = currentTimeString;
     }
 
@@ -252,7 +253,6 @@ function setMinTimes(startDate, endDate) {
     min;
     hour;
     endDate = new Date(yyyy, mm, dd);
-    now = new Date();
 
     if(endDate.getFullYear() === now.getFullYear() &&
         endDate.getMonth() ===  now.getMonth() &&
@@ -264,7 +264,7 @@ function setMinTimes(startDate, endDate) {
             hour = now.getHours();
         }
         if(now.getMinutes()<10){
-            min = now.getMinutes();
+            min = '0'+now.getMinutes();
         }else{
             min = now.getMinutes();
         }
