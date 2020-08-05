@@ -124,7 +124,7 @@ function preFillEntry(queryString) {
     if(queryString){
         var entry = sessionStorage.getItem(queryString);
         var entryJSON = JSON.parse(entry);
-        document.getElementById("addCategoryPageHeader").innerHTML = "Edit Calendar Entry";
+        document.getElementById("addCalendarEntryPageHeader").innerHTML = "Edit Calendar Entry";
         document.getElementById("event_name").value = entryJSON.title;
         document.getElementById("status").value = entryJSON.status;
         document.getElementById("category").value = entryJSON.categories[0].id.toString();
@@ -343,7 +343,7 @@ function uploadEvent() {
 
 // Pre-fill editCategoryForm with category that is to be edited
 function preFillCategory(queryString) {
-    if(queryString){ll
+    if(queryString){
         var entry = sessionStorage.getItem(queryString);
         var entryJSON = JSON.parse(entry);
         document.getElementById("addCategoryPageHeader").innerHTML = "Edit Category";
