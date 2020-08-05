@@ -1,17 +1,18 @@
+// global variables
 var url = "http://dhbw.radicalsimplicity.com/calendar/";
 var user = "7035821";
 
 var alarmTimes = [];
 var alarmSound = new Audio("../Resources/alarm.mp3")
 
+// fill the category and event table when page is loaded
 window.onload = function() {
     window.history.forward(1);
     loadData("categories");
     loadData("events");
 };
 
-
-
+// the first row of the event table
 function addEventTableHeader() {
     var tableHead =
         "<tr>" +
@@ -29,6 +30,7 @@ function addEventTableHeader() {
     return tableHead
 }
 
+// start the server request to get entry items of events and categories
 function loadData(data) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -47,6 +49,7 @@ function loadData(data) {
     xhttp.send();
 }
 
+// fill the event table with the data list which we received from the server response
 function loadEventTable(json) {
     var response = JSON.parse(json.responseText);
     var parsedEvent;
@@ -117,6 +120,7 @@ function loadEventTable(json) {
     setAlarms(alarmTimes);
 }
 
+// fill the category table with the data list which we received from th server response
 function loadCategoryTable(json) {
     var parsedCategories = JSON.parse(json.responseText);
     sessionStorage.setItem("category_count",parsedCategories.length);
@@ -134,7 +138,7 @@ function loadCategoryTable(json) {
     document.getElementById("category_table").innerHTML = categories;
 }
 
-
+// check if the user really wants to delete an entry in the tables
 function confirmDeletion(data, id) {
     console.log(data,id);
     var userselection = confirm("Are you sure you want to delete this entry?");
@@ -145,12 +149,14 @@ function confirmDeletion(data, id) {
     }
 }
 
+// start the server request to delete entry items
 function deleteData(data, id) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
     xmlhttp.send();
 }
 
+// start the server request to edit entry items of events and categories
 function editData(data, id) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", url+user+"/"+data+"/"+id, true);
@@ -172,6 +178,7 @@ function editData(data, id) {
     xmlhttp.send();
 }
 
+// check if the user has more than 10 categories
 function checkAmountOfCategories() {
     if (sessionStorage.category_count > 10) {
         alert("You cannot have more than 10 categories. Please delete some first to add more!");
@@ -180,8 +187,8 @@ function checkAmountOfCategories() {
     }
 }
 
+// store the event data which we received from the server response
 function transformResponseEvent(json) {
-
     var parsedEvent = json;
     var webPage;
     var location;
@@ -236,6 +243,7 @@ function transformResponseEvent(json) {
     return transformed;
 }
 
+// store the category data which we received from the server response
 function transformResponseCategory(json) {
     var parsedCategory = json;
     var transformed = JSON.stringify({
@@ -245,15 +253,13 @@ function transformResponseCategory(json) {
     return transformed;
 }
 
+// set the reminder for the events
 function setAlarms(alarmInfos){
-
     var AlarmTimes = [];
     var alarmTime;
     var timeDifference;
 
-
     for(var i=0; i<alarmInfos.length;i++){
-
         // Check if alarm was set
         if(alarmInfos[i][0] === true){
             // check if alarm is in the past
@@ -282,6 +288,7 @@ function setAlarms(alarmInfos){
     }
 }
 
+// cut the date string to transform them together into a valid date object
 function getAlarmTime(info) {
     var yyyy;
     var mm;
@@ -303,14 +310,14 @@ function getAlarmTime(info) {
     return alarmTime;
 }
 
+// alert for the reminder 
 function setOffAlarm(eventName){
     alarmSound.play();
     alert("Your event: "+eventName+" is happening now!");
 }
 
-
+// Reset number of window loads, for the case of leaving the page
  function resetWindowLoads(option) {
-    //Reset number of window loads, for the case of leaving the page.
     if(option === "reset"){
         sessionStorage.setItem("windowLoads","0");
     }
