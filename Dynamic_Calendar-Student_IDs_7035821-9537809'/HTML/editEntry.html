@@ -60,12 +60,12 @@
         <br>
 
         <label for="start_date">Start</label>
-        <input type="date" id="start_date" required onchange="setEndDateMin()" >
+        <input type="date" id="start_date" required onchange="setMinimums()" >
         <input type="time" id="start_time" required>
         <br>
 
         <label for="end_date">End</label>
-        <input type="date" id="end_date" required >
+        <input type="date" id="end_date" required onchange="setMinimums()">
         <input type="time" id="end_time" required>
         <br>
 

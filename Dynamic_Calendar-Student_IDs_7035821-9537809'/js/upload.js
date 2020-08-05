@@ -295,14 +295,16 @@ function setEndDateMin() {
     document.getElementById("end_date").min = document.getElementById("start_date").value;
 }
 
-
-function uploadEvent() {
+function setMinimums(){
     // Making sure min dates and times have not been reached when submitting
     setMinTimes(document.getElementById("start_date").value, document.getElementById("end_date").value);
     setEndDateMin();
+}
+function uploadEvent() {
     setMinDateToToday();
 
     var xmlhttp = new XMLHttpRequest();
+
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             alert("Your entry was added to the Calendar");
@@ -327,18 +329,7 @@ function uploadEvent() {
     }
     xmlhttp.setRequestHeader("Content-Type", "text/plain");
     xmlhttp.send(getInputFromEntryForm());
-    var submissionCount = sessionStorage.getItem("submissionFailCount");
 
-    // Try to submit once more if submission fails, so min Times and Dates get set
-    if(submissionCount){
-        if(parseInt(submissionCount) === 1){
-            uploadEvent();
-            submissionCount = parseInt(submissionCount)+1;
-            sessionStorage.setItem("submissionFailCount", submissionCount)
-        }else{
-            sessionStorage.setItem("submissionFailCount", 0);
-        }
-    }
 }
 
 // Pre-fill editCategoryForm with category that is to be edited
@@ -379,14 +370,11 @@ function uploadCategory() {
             alert("This category already exists. Try another name!");
             window.location.replace("editCategory.html");
         }
-        // Validate information was received
     }
 
-    if(queryString){
-        xmlhttp.open("PUT", url+user+"/categories/"+queryString.toString(), true);
-    }else{
-        xmlhttp.open("POST", url+user+"/categories", true);
-    }
+
+    xmlhttp.open("POST", url+user+"/categories", true);
+
     xmlhttp.setRequestHeader("Content-Type", "text/plain");
     xmlhttp.send(getCategoryFormInput());
 }
@@ -408,7 +396,6 @@ window.onload = function(){
 }
 // Prevent user from going forward and backwards
 window.addEventListener( "pageshow", function ( event ) {
-    window.history.forward(1);
     var historyTraversal = event.persisted ||
         ( typeof window.performance !== "undefined" &&
             window.performance.navigation.type === 2 );
