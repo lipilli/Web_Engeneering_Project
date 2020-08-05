@@ -95,7 +95,7 @@ function showImageOnCanvas(){
 
     var image = document.getElementById("image_upload");
     var background = new Image();
-    if(imageLink){
+    if(imageLink!=null){
         background.src = imageLink;
     }else {
         background.src = URL.createObjectURL(image.files[0]);
@@ -139,6 +139,7 @@ function preFillEntry(queryString) {
 
         if(entryJSON.imageurl){
             imageLink = entryJSON.imageurl;
+            showImageOnCanvas();
         }
     }
 }
