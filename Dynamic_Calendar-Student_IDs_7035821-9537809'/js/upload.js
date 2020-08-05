@@ -91,14 +91,14 @@ function importCategoryOptions(json) {
 
 }
 // Image preview
-function showImageOnCanvas(link){
+function showImageOnCanvas(){
 
     var image = document.getElementById("image_upload");
     var background = new Image();
-    if(link===''){
-        background.src = URL.createObjectURL(image.files[0]);
+    if(imageLink){
+        background.src = imageLink;
     }else {
-        background.src = link;
+        background.src = URL.createObjectURL(image.files[0]);
     }
     background.onload = function (){
         var canvas = document.getElementById("canvas");
@@ -109,7 +109,7 @@ function showImageOnCanvas(link){
         context.width = background.width;
         context.height = background.height;
         context.drawImage(background, 0, 0);
-        if(!(link==="")){
+        if(!(imageLink)){
             convertImageToDataURL(canvas);
         }
     }
@@ -139,7 +139,6 @@ function preFillEntry(queryString) {
 
         if(entryJSON.imageurl){
             imageLink = entryJSON.imageurl;
-            showImageOnCanvas(imageLink);
         }
     }
 }
