@@ -13,6 +13,62 @@ var editEntryForm = document.getElementById("edit_form");
 function handleForm(event) { event.preventDefault(); }
 editEntryForm.addEventListener('submit', handleForm);
 
+// Fills the category drop-down menu
+function importCategoryOptions(json) {
+    var parsedCategories = JSON.parse(json.responseText);
+
+    // Clear old categories
+    document.getElementById("category").innerHTML = "";
+
+    // Category option "None"
+    document.getElementById("category").innerHTML =
+        document.getElementById("category").innerHTML +
+        "<option value=\"None\">None</option>";
+
+    // Load Categories
+    parsedCategories.forEach(function(category){
+        document.getElementById("category").innerHTML=
+            document.getElementById("category").innerHTML +
+            "<option value="+category.id+">"+category.name+"</option>";
+    });
+}
+
+// Gets available categories from server
+function loadCategories(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            importCategoryOptions(this);
+        }
+    };
+    xhttp.open("GET", url+user+"/categories", true);
+    xhttp.send();
+}
+
+// Pre-fill editEntryForm with event that is to be edited
+function preFillEntry(queryString) {
+    if(queryString){
+        var entry = sessionStorage.getItem(queryString);
+        var entryJSON = JSON.parse(entry);
+        document.getElementById("addCalendarEntryPageHeader").innerHTML = "Edit Calendar Entry";
+        document.getElementById("event_name").value = entryJSON.title;
+        document.getElementById("status").value = entryJSON.status;
+        document.getElementById("category").value = entryJSON.categories[0].id.toString();
+        document.getElementById("location").value = entryJSON.location;
+        document.getElementById("all_day").checked = entryJSON.allday;
+        document.getElementById("start_date").value = entryJSON.start_date;
+        document.getElementById("start_time").value = entryJSON.start_time;
+        document.getElementById("end_date").value = entryJSON.end_date;
+        document.getElementById("end_time").value = entryJSON.end_time;
+        document.getElementById("webpage").value = entryJSON.webpage;
+        document.getElementById("organizer").value = entryJSON.organizer;
+
+        if(entryJSON.imageurl){
+            imageLink = entryJSON.imageurl;
+            showImageOnCanvas();
+        }
+    }
+}
 
 function saveSelectedCategory() {
     var selectedCategory = document.getElementById("category").value;
@@ -57,48 +113,18 @@ function resetWindowLoads(option) {
     }
 }
 
-// Gets available categories from server
-function loadCategories(){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            importCategoryOptions(this);
-        }
-    };
-    xhttp.open("GET", url+user+"/categories", true);
-    xhttp.send();
+function convertImageToDataURL(canvas){
+    imageURL = canvas.toDataURL('image/jpeg');
 }
 
-// Fills the category drop-down menu
-function importCategoryOptions(json) {
-    var parsedCategories = JSON.parse(json.responseText);
-
-    // Clear old categories
-    document.getElementById("category").innerHTML = "";
-
-    // Category option "None"
-    document.getElementById("category").innerHTML =
-        document.getElementById("category").innerHTML +
-        "<option value=\"None\">None</option>";
-
-    // Load Categories
-    parsedCategories.forEach(function(category){
-        document.getElementById("category").innerHTML=
-            document.getElementById("category").innerHTML +
-            "<option value="+category.id+">"+category.name+"</option>";
-    });
-
-
-}
 // Image preview
-function showImageOnCanvas(link){
-
+function showImageOnCanvas(){
     var image = document.getElementById("image_upload");
     var background = new Image();
-    if(link===''){
-        background.src = URL.createObjectURL(image.files[0]);
+    if(imageLink!=null){
+        background.src = imageLink;
     }else {
-        background.src = link;
+        background.src = URL.createObjectURL(image.files[0]);
     }
     background.onload = function (){
         var canvas = document.getElementById("canvas");
@@ -109,37 +135,8 @@ function showImageOnCanvas(link){
         context.width = background.width;
         context.height = background.height;
         context.drawImage(background, 0, 0);
-        if(!(link==="")){
+        if(!(imageLink)){
             convertImageToDataURL(canvas);
-        }
-    }
-}
-
-function convertImageToDataURL(canvas){
-    imageURL = canvas.toDataURL('image/jpeg');
-}
-
-// Pre-fill editEntryForm with event that is to be edited
-function preFillEntry(queryString) {
-    if(queryString){
-        var entry = sessionStorage.getItem(queryString);
-        var entryJSON = JSON.parse(entry);
-        document.getElementById("addCalendarEntryPageHeader").innerHTML = "Edit Calendar Entry";
-        document.getElementById("event_name").value = entryJSON.title;
-        document.getElementById("status").value = entryJSON.status;
-        document.getElementById("category").value = entryJSON.categories[0].id.toString();
-        document.getElementById("location").value = entryJSON.location;
-        document.getElementById("all_day").checked = entryJSON.allday;
-        document.getElementById("start_date").value = entryJSON.start_date;
-        document.getElementById("start_time").value = entryJSON.start_time;
-        document.getElementById("end_date").value = entryJSON.end_date;
-        document.getElementById("end_time").value = entryJSON.end_time;
-        document.getElementById("webpage").value = entryJSON.webpage;
-        document.getElementById("organizer").value = entryJSON.organizer;
-
-        if(entryJSON.imageurl){
-            imageLink = entryJSON.imageurl;
-            showImageOnCanvas(imageLink);
         }
     }
 }
@@ -236,12 +233,13 @@ function setMinTimes(startDate, endDate) {
             hour = now.getHours();
         }
         if(now.getMinutes()<10){
-            min = now.getMinutes();
+            min = '0'+now.getMinutes();
         }else{
             min = now.getMinutes();
         }
         // For some reason hours and minutes are switched...
         var currentTimeString = hour+":"+min;
+        console.log(currentTimeString);
         document.getElementById("start_time").min = currentTimeString;
     }
 
@@ -253,7 +251,6 @@ function setMinTimes(startDate, endDate) {
     min;
     hour;
     endDate = new Date(yyyy, mm, dd);
-    now = new Date();
 
     if(endDate.getFullYear() === now.getFullYear() &&
         endDate.getMonth() ===  now.getMonth() &&
@@ -265,7 +262,7 @@ function setMinTimes(startDate, endDate) {
             hour = now.getHours();
         }
         if(now.getMinutes()<10){
-            min = now.getMinutes();
+            min = '0'+now.getMinutes();
         }else{
             min = now.getMinutes();
         }
@@ -295,14 +292,16 @@ function setEndDateMin() {
     document.getElementById("end_date").min = document.getElementById("start_date").value;
 }
 
-
-function uploadEvent() {
+function setMinimums(){
     // Making sure min dates and times have not been reached when submitting
     setMinTimes(document.getElementById("start_date").value, document.getElementById("end_date").value);
     setEndDateMin();
+}
+function uploadEvent() {
     setMinDateToToday();
 
     var xmlhttp = new XMLHttpRequest();
+
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             alert("Your entry was added to the Calendar");
@@ -327,18 +326,7 @@ function uploadEvent() {
     }
     xmlhttp.setRequestHeader("Content-Type", "text/plain");
     xmlhttp.send(getInputFromEntryForm());
-    var submissionCount = sessionStorage.getItem("submissionFailCount");
 
-    // Try to submit once more if submission fails, so min Times and Dates get set
-    if(submissionCount){
-        if(parseInt(submissionCount) === 1){
-            uploadEvent();
-            submissionCount = parseInt(submissionCount)+1;
-            sessionStorage.setItem("submissionFailCount", submissionCount)
-        }else{
-            sessionStorage.setItem("submissionFailCount", 0);
-        }
-    }
 }
 
 // Pre-fill editCategoryForm with category that is to be edited
@@ -364,6 +352,7 @@ function getCategoryFormInput() {
     return message;
 }
 
+// Add or edit the category when the specific button is clicked
 function uploadCategory() {
     var xmlhttp = new XMLHttpRequest();
 
@@ -371,24 +360,28 @@ function uploadCategory() {
         readyState = this.readyState;
         status = this.status;
         if (this.readyState === 4 && this.status === 200) {
+            deleteOldCategory();
             alert("Your category was added to the calendar!");
             window.location.replace("index.html");
         } else if(this.status === 400){
             console.log("sth. went wrong ");
-        } else if(this.status === 500) {
+        } else if(this.status === 404 || this.status === 500) {
             alert("This category already exists. Try another name!");
             window.location.replace("editCategory.html");
         }
-        // Validate information was received
     }
-
-    if(queryString){
-        xmlhttp.open("PUT", url+user+"/categories/"+queryString.toString(), true);
-    }else{
-        xmlhttp.open("POST", url+user+"/categories", true);
-    }
+    xmlhttp.open("POST", url+user+"/categories", true);
     xmlhttp.setRequestHeader("Content-Type", "text/plain");
     xmlhttp.send(getCategoryFormInput());
+}
+
+// if the category name is changed, the old category will be deleted and a new one will be created
+function deleteOldCategory() {
+    if (queryString) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("DELETE", url+user+"/categories/"+queryString.toString(), true);
+        xmlhttp.send();
+    }
 }
 
 window.onload = function(){
@@ -406,9 +399,9 @@ window.onload = function(){
         resetWindowLoads();
     }
 }
+
 // Prevent user from going forward and backwards
 window.addEventListener( "pageshow", function ( event ) {
-    window.history.forward(1);
     var historyTraversal = event.persisted ||
         ( typeof window.performance !== "undefined" &&
             window.performance.navigation.type === 2 );

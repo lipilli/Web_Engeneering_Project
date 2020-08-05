@@ -5,13 +5,6 @@ var user = "7035821";
 var alarmTimes = [];
 var alarmSound = new Audio("../Resources/alarm.mp3")
 
-// fill the category and event table when page is loaded
-window.onload = function() {
-    window.history.forward(1);
-    loadData("categories");
-    loadData("events");
-};
-
 // the first row of the event table
 function addEventTableHeader() {
     var tableHead =
@@ -30,23 +23,70 @@ function addEventTableHeader() {
     return tableHead
 }
 
-// start the server request to get entry items of events and categories
-function loadData(data) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            switch(data) {
-                case("events"):
-                    loadEventTable(this);
-                    break;
-                case("categories"):
-                    loadCategoryTable(this);
-                    break;
-            }
-        }
-    };
-    xhttp.open("GET", url+user+"/"+data, true);
-    xhttp.send();
+// store the event data which we received from the server response
+function transformResponseEvent(json) {
+    var parsedEvent = json;
+    var webPage;
+    var location;
+    var startTime;
+    var endTime;
+    var startDate;
+    var endDate;
+    var categories;
+
+    startDate = parsedEvent.start.split("T", 1)[0];
+    endDate = parsedEvent.end.split("T", 1)[0];
+
+    if (parsedEvent.allday === true) {
+        startTime = "00:00";
+        endTime = "23:59";
+    } else {
+        startTime = parsedEvent.start.split("T", 2)[1];
+        endTime= parsedEvent.end.split("T", 2)[1];
+    }
+    if (parsedEvent.webpage){
+        webPage = parsedEvent.webpage;
+    }else{
+        webPage = "";
+    }
+    if (parsedEvent.location){
+        location = parsedEvent.location
+    }else{
+        location = "";
+    }
+    if (parsedEvent.categories.length === 0){
+        categories = [{id: 0, name: "none"}];
+    }else{
+        categories = parsedEvent.categories;
+    }
+
+    var transformed = JSON.stringify({
+        id: parsedEvent.id,
+        title: parsedEvent.title,
+        location: location,
+        organizer: parsedEvent.organizer,
+        start_date:startDate,
+        start_time: startTime,
+        end_date:endDate,
+        end_time:endTime,
+        status: parsedEvent.status,
+        allday: parsedEvent.allday,
+        webpage: webPage,
+        imageurl: parsedEvent.imageurl,
+        categories: categories,
+        extra: parsedEvent.extra
+    });
+    return transformed;
+}
+
+// store the category data which we received from the server response
+function transformResponseCategory(json) {
+    var parsedCategory = json;
+    var transformed = JSON.stringify({
+        id: parsedCategory.id,
+        name: parsedCategory.name
+    });
+    return transformed;
 }
 
 // fill the event table with the data list which we received from the server response
@@ -126,16 +166,24 @@ function loadCategoryTable(json) {
     sessionStorage.setItem("category_count",parsedCategories.length);
 
     var categories = "<tr>";
-    for (var i=0; i<parsedCategories.length; i++) {
+    var i;
+    for (i=0; i<parsedCategories.length; i++) {
         categories = categories + "<th>" + parsedCategories[i].name + "</th>";
     }
     categories = categories + "</tr>";
     categories = categories + "<tr>";
-    for ( i=0; i<parsedCategories.length; i++) {
+    for (i=0; i<parsedCategories.length; i++) {
         categories = categories + "<td>" + "<button onclick=\"editData(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Edit</button>"+"<br>"+"<button onclick=\"confirmDeletion(\'categories\',"+parsedCategories[i].id+")\" style=\"width: 100%\">Delete</button>" + "</td>";
     }
     categories = categories + "</tr>";
     document.getElementById("category_table").innerHTML = categories;
+}
+
+// start the server request to delete entry items
+function deleteData(data, id) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
+    xmlhttp.send();
 }
 
 // check if the user really wants to delete an entry in the tables
@@ -147,13 +195,6 @@ function confirmDeletion(data, id) {
         alert("Entry deleted!");
         loadData(data);
     }
-}
-
-// start the server request to delete entry items
-function deleteData(data, id) {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("DELETE", url+user+"/"+data+"/"+id, true);
-    xmlhttp.send();
 }
 
 // start the server request to edit entry items of events and categories
@@ -178,113 +219,40 @@ function editData(data, id) {
     xmlhttp.send();
 }
 
+// start the server request to get entry items of events and categories
+function loadData(data) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+            switch(data) {
+                case("events"):
+                    loadEventTable(this);
+                    break;
+                case("categories"):
+                    loadCategoryTable(this);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+    xhttp.open("GET", url+user+"/"+data, true);
+    xhttp.send();
+}
+
+// fill the category and event table when page is loaded
+window.onload = function() {
+    window.history.forward(1);
+    loadData("categories");
+    loadData("events");
+};
+
 // check if the user has more than 10 categories
 function checkAmountOfCategories() {
     if (sessionStorage.category_count > 10) {
         alert("You cannot have more than 10 categories. Please delete some first to add more!");
     } else {
         window.location.replace("editCategory.html");
-    }
-}
-
-// store the event data which we received from the server response
-function transformResponseEvent(json) {
-    var parsedEvent = json;
-    var webPage;
-    var location;
-    var startTime;
-    var endTime;
-    var startDate;
-    var endDate;
-    var categories;
-
-    startDate = parsedEvent.start.split("T", 1)[0];
-    endDate = parsedEvent.end.split("T", 1)[0];
-
-    if (parsedEvent.allday === true) {
-        startTime = "00:00";
-        endTime = "23:59";
-    } else {
-        startTime = parsedEvent.start.split("T", 2)[1];
-        endTime= parsedEvent.end.split("T", 2)[1];
-    }
-    if (parsedEvent.webpage){
-        webPage = parsedEvent.webpage;
-    }else{
-        webPage = "";
-    }
-    if (parsedEvent.location){
-        location = parsedEvent.location
-    }else{
-        location = "";
-    }
-    if (parsedEvent.categories.length === 0){
-        categories = [{id: 0, name: "none"}];
-    }else{
-        categories = parsedEvent.categories;
-    }
-
-    var transformed = JSON.stringify({
-        id: parsedEvent.id,
-        title: parsedEvent.title,
-        location: location,
-        organizer: parsedEvent.organizer,
-        start_date:startDate,
-        start_time: startTime,
-        end_date:endDate,
-        end_time:endTime,
-        status: parsedEvent.status,
-        allday: parsedEvent.allday,
-        webpage: webPage,
-        imageurl: parsedEvent.imageurl,
-        categories: categories,
-        extra: parsedEvent.extra
-    });
-    return transformed;
-}
-
-// store the category data which we received from the server response
-function transformResponseCategory(json) {
-    var parsedCategory = json;
-    var transformed = JSON.stringify({
-        id: parsedCategory.id,
-        name: parsedCategory.name
-    });
-    return transformed;
-}
-
-// set the reminder for the events
-function setAlarms(alarmInfos){
-    var AlarmTimes = [];
-    var alarmTime;
-    var timeDifference;
-
-    for(var i=0; i<alarmInfos.length;i++){
-        // Check if alarm was set
-        if(alarmInfos[i][0] === true){
-            // check if alarm is in the past
-            alarmTime = getAlarmTime(alarmInfos[i]);
-            console.log(alarmInfos[i])
-            timeDifference = alarmTime.getTime() - (new Date()).getTime();
-
-            if(timeDifference > 0) {
-                // Append Time until counter goes of and event name
-                AlarmTimes.push([timeDifference, alarmInfos[i][3]]);
-            }
-        }
-    }
-    console.log(AlarmTimes);
-    setInterval(countDown, 1000);
-
-    function countDown(){
-        for(i = 0; i<AlarmTimes.length; i++){
-            //Count down one second
-            AlarmTimes[i][0] = AlarmTimes[i][0] - 1000;
-            if(AlarmTimes[i][0]<0){
-                setOffAlarm(AlarmTimes[i][1]);
-                AlarmTimes.splice(i, 1);
-            }
-        }
     }
 }
 
@@ -314,6 +282,42 @@ function getAlarmTime(info) {
 function setOffAlarm(eventName){
     alarmSound.play();
     alert("Your event: "+eventName+" is happening now!");
+}
+
+// set the reminder for the events
+function setAlarms(alarmInfos){
+    var AlarmTimes = [];
+    var alarmTime;
+    var timeDifference;
+
+    var i;
+    for(i=0; i<alarmInfos.length;i++){
+        // Check if alarm was set
+        if(alarmInfos[i][0] === true){
+            // check if alarm is in the past
+            alarmTime = getAlarmTime(alarmInfos[i]);
+            console.log(alarmInfos[i])
+            timeDifference = alarmTime.getTime() - (new Date()).getTime();
+
+            if(timeDifference > 0) {
+                // Append Time until counter goes of and event name
+                AlarmTimes.push([timeDifference, alarmInfos[i][3]]);
+            }
+        }
+    }
+    console.log(AlarmTimes);
+    setInterval(countDown, 1000);
+
+    function countDown(){
+        for(i = 0; i<AlarmTimes.length; i++){
+            //Count down one second
+            AlarmTimes[i][0] = AlarmTimes[i][0] - 1000;
+            if(AlarmTimes[i][0]<0){
+                setOffAlarm(AlarmTimes[i][1]);
+                AlarmTimes.splice(i, 1);
+            }
+        }
+    }
 }
 
 // Reset number of window loads, for the case of leaving the page
