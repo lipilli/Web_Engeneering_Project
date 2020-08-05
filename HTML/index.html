@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
@@ -25,9 +25,7 @@
 
       <!--Add entry button-->
       <div id="calendar_options">
-        <a href="edit_entry.html">
-          <button>Add entry</button>
-        </a>
+        <button onclick="window.location.replace('edit_entry.html');">Add entry</button>
         <button onclick="checkAmountOfCategories()">Add category</button>
       </div>
 
@@ -36,13 +34,13 @@
     <!--Categories-->
     <h1>Categories</h1>
     <div class="table-scroll">
-      <table align="center" id="category_table" style="width: 950px"></table>
+      <table id="category_table" style="width: 950px"></table>
     </div>
 
     <!--Calendar-->
     <h1>Events</h1>
     <div class="table-scroll">
-      <table align="center" id="event_table" style="width: 950px"></table>
+      <table id="event_table" style="width: 950px"></table>
     </div>
     <br>
 
