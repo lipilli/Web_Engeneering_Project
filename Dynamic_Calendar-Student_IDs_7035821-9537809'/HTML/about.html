@@ -4,29 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <title>Dynamic Calendar</title>
-    <link rel="stylesheet" href="../css/new.css">
-    <link rel="stylesheet" href="../css/our_style.css">
+    <link rel="stylesheet" href="../CSS/new.css">
+    <link rel="stylesheet" href="../CSS/ourStyle.css">
     <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
   </head>
   <body>
     <script>
       // Prevent user from going forward and backwards
       window.history.forward(1)
-      /*
-      // Go forward in the browser history
-      window.addEventListener( "pageshow", function ( event ) {
-        window.history.forward(1)
-        var historyTraversal = event.persisted // page was loaded from cache
-                // Page was accessed through history traversal
-                ( typeof window.performance != "undefined" &&
-                        window.performance.navigation.type === 2 );
-        if ( historyTraversal ) {
-          // Handle page restore.
-          window.location.reload();
-        }
-      });
 
-      */
     </script>
     <header>
       <h1>Dynamic Calendar</h1>
@@ -44,8 +30,8 @@
     <div id="aboutPage">
       <h3>General</h3>
       <p>
-        <b>Project name:</b> Dynamic Calendar <br>
-        <b>Authors:</b> Deborah Djon, Viet Dang <br>
+        <strong>Project name:</strong> Dynamic Calendar <br>
+        <strong>Authors:</strong> 7035821, 9537809 <br>
       </p>
 
       <h3>Description</h3>
@@ -73,11 +59,17 @@
         <li>Back button handling on all pages</li>
         <li>Show categories from server</li>
         <li>Extra pages for editing and adding entries and categories</li>
-        <li>Image preview on the edit/add entry page</li>
+        <li>Image preview on the edit/add entry page (implemented with canvas)</li>
         <li>Refresh button handling on the edit/add entry page</li>
         <li>About page</li>
-        <li>Contact page with contact form</li>
+        <li>Contact page with contact editEntryForm and php script</li>
       </ul>
+
+      <h3>Further Notes</h3>
+      <p>We created a php script for sending the message in the contact editEntryForm directly to us. However,
+      since we don't have a server, we were not able to test it. As a compromise, your local e-mail editor is opened when a contact editEntryForm is submitted.
+        All fields are pre-filled with the message from the contact editEntryForm.</p>
+
     </div>
   </body>
 </html>

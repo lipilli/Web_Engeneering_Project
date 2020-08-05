@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <title>Dynamic Calendar</title>
-    <link rel="stylesheet" href="../css/new.css">
-    <link rel="stylesheet" href="../css/our_style.css">
+    <link rel="stylesheet" href="../CSS/new.css">
+    <link rel="stylesheet" href="../CSS/ourStyle.css">
     <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
   </head>
   <body>
@@ -20,12 +20,11 @@
       </p>
     </header>
 
-    <h1>Contact us!</h1>
+    <h1 id="contactPageHeader">Contact us!</h1>
     <br>
     <div id="FormDiv">
 
-      <!--  <form id="contactForm" action="contactForm.php" method="POST" enctype="text/plain">   -->
-      <form id="contactForm" action="mailto:deborah_chrystall_djon@yahoo.de" method="POST" enctype="text/plain" onsubmit="location.href='index.html'">
+      <form id="contactForm" action="mailto:deborah_chrystall_djon@yahoo.de" method="POST" enctype="text/plain" onsubmit="mailTo()">
         <label for="salutation">Salutation:</label>
         <select id="salutation">
           <option selected="selected" value="Mr">Mr</option>
@@ -78,14 +77,24 @@
           //Reset page to its initial state.
         }else if(parseInt(windowLoads)>0){
 
-          //document.getElementById("category").value = ;
           var userselection = confirm("Are you sure u want to reload?\n All your data will be lost.");
 
           if(userselection === true){
             document.getElementById("contactForm").reset();
-            //document.getElementById("category").value = sessionStorage.getItem("selectedCategory");
           }
         }
+      }
+
+      function mailTo(){
+        var salutation = document.getElementById("salutation").value
+        var name = document.getElementById("formName").value;
+        var message = document.getElementById("message").value;
+        var subject = document.getElementById("subject").value;
+
+        var mailToString = "mailto:deborah_chrystall_djon@yahoo.de?subject=Dynamic Calender message from "+
+                salutation+" "+name+": "+subject+"&body="+message;
+        document.getElementById("contactForm").action = mailToString;
+        location.href='index.html';
       }
 
     </script>
